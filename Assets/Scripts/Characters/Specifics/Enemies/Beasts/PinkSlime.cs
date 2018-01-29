@@ -9,14 +9,6 @@ public class PinkSlime : CharacterGeneric {
      * This script is a child of CharacterGeneric.
      */
 
-    CharacterStats PinkSlimeStats;
-
-    //Update is called once per frame
-    void Update()
-    {
-
-    }
-
     /*
      * Specific to each character; Setting up the stats
      * for each character.
@@ -25,13 +17,8 @@ public class PinkSlime : CharacterGeneric {
     protected override void CharacterSetup()
     {
         base.CharacterSetup();
-        PinkSlimeStats = new CharacterStats("PinkSlime", gameObject.tag, 50, 10, 4, 5, 7, 3, 0, 30, 0, 0);
+        characterStats = new CharacterStats("PinkSlime", gameObject.tag, 
+            50, 10, 4, 5, 7, 3, 0, 0, 30, 0, 0, 0);
  
-    }
-
-    //return all character stats for Pink Slime
-    public CharacterStats ReturnStats
-    {
-        get { return PinkSlimeStats; }
     }
 }

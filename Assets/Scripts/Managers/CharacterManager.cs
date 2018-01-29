@@ -5,9 +5,12 @@ using UnityEngine;
 public class CharacterManager : MonoBehaviour {
 
     /*
-     * This code will manage the characters, and any stat changes 
-     * that happen along the way...
+     * This script will create the roster for the characters
+     * and send it to the battle manager
      */
+
+    bool transferReady; //key to determine whether to transfer
+                        //data to the battle manager
 
     int orderID;    //the order in which the characters are 
                     //registered in the roster
@@ -18,6 +21,7 @@ public class CharacterManager : MonoBehaviour {
     List<GameObject> enemyObjects;  //list of all enemies entering battle
 
     public AllCharacterList allCharacters; //list of all characters ever created
+    public GameObject battleManager;    //the battle manager game object
     public GameObject backgroundCheck;  //a the background game object
     public List<Transform> playerSpawn; //list of all player spawn points
     public List<Transform> enemySpawn;  //list of all enemy spawn points
@@ -25,10 +29,14 @@ public class CharacterManager : MonoBehaviour {
     //Initializing all private variables first
     private void Awake()
     {
+        transferReady = false;
         orderID = 0;
         roster = new List<CharacterStats>();
         playerObjects = new List<GameObject>();
         enemyObjects = new List<GameObject>();
+        battleManager.SetActive(false); //activating the battle manager once
+                                        //all the characters have been
+                                        //added to their proper lists...
     }
 
     //Initializing the scene with all the startup functions
@@ -45,8 +53,18 @@ public class CharacterManager : MonoBehaviour {
                             //roster so that they can be added to the
                             //battle manager to handle...
 
+        /*
         DisplayRoster();    //this is just for DEBUGGING, just to display
                             //all the character stats in the roster
+        */
+
+        battleManager.SetActive(true);  //once everything has been set up,
+                                        //activate the battle manager
+        
+
+        //transfer data from Character to Battle Manager
+        BattleManager bm = battleManager.GetComponent<BattleManager>();
+        bm.TransferFromGM(roster, playerObjects, enemyObjects);
     }
 
     //This function will instantiate all the characters for battle
@@ -61,6 +79,7 @@ public class CharacterManager : MonoBehaviour {
             //so that their stats can be added to the 'roster'
             //CharacterStats list later...
             playerObjects.Add(Instantiate(g, playerSpawn[index]));
+            playerObjects[index].transform.SetParent(GameObject.Find("CharacterRoster").transform);
             index++;
         }
 
@@ -88,6 +107,7 @@ public class CharacterManager : MonoBehaviour {
                 //so that their stats can be added to the 'roster'
                 //CharacterStats list later...
                 enemyObjects.Add(Instantiate(temp, enemySpawn[i]));
+                enemyObjects[i].transform.SetParent(GameObject.Find("CharacterRoster").transform);
             }
         }
     }
@@ -138,7 +158,7 @@ public class CharacterManager : MonoBehaviour {
         //As more enemies are added, the function will grow immensely...
         //This is only a temporary fix, until I can figure out a better
         //way to handle this...
-        string backgroundName = backgroundCheck.name.ToUpper();
+        //string backgroundName = backgroundCheck.name.ToUpper();
 
         foreach (GameObject g in enemyObjects)
         {
@@ -168,6 +188,7 @@ public class CharacterManager : MonoBehaviour {
 
     }
 
+    /*
     //This function displays the full roster
     //JUST FOR DEBUGGING PURPOSES
     public void DisplayRoster()
@@ -191,5 +212,6 @@ public class CharacterManager : MonoBehaviour {
                         ", OID: "   + cs.gs_OID);
         }
     }
+    */
 
 }

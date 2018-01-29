@@ -18,6 +18,7 @@ public class CharacterStats {
     int defensePoints;  //DEF: the character's defense points
     int speedPoints;    //SPD: the character's speed points
     int luckPoints;     //LUK: the character's luck points
+    int position;       //POS: the character's current position
     int experienceMeter;    //EXM: the character's experience meter;
                             //ranges from 0 to 100
     int experiencePoints;   //EXP: the character's experience points;
@@ -25,25 +26,30 @@ public class CharacterStats {
                             //EXM != 0
     int form;   //FORM: the character's current form
     int orderID;  //OID: the order in which the character is in the roster
+    float turnMeter;  //TM: meter that increments over time to determine when the character can take action
 
     //default constructor for all characters
     public CharacterStats(string id, string alignment, int hp, int sp, int atk, int def, 
-        int spd, int luk, int exm, int exp, int phase, int order)
+        int spd, int luk, int pos, int exm, int exp, int phase, int order, float tm)
     {
 
         //setting up initial stat values
         name = id;
         side = alignment;
+
         healthPoints = hp;
         skillPoints = sp;
         attackPoints = atk;
         defensePoints = def;
         speedPoints = spd;
         luckPoints = luk;
+        position = pos;
         experienceMeter = exm;
         experiencePoints = exp;
         form = phase;
         orderID = order;
+
+        turnMeter = tm;
     }
 
     //special addition for certain characters;
@@ -103,6 +109,12 @@ public class CharacterStats {
         set { luckPoints = value; }
     }
 
+    public int gs_POS
+    {
+        get { return position; }
+        set { position = value; }
+    }
+
     public int gs_EXM
     {
         get { return experienceMeter; }
@@ -125,5 +137,11 @@ public class CharacterStats {
     {
         get { return orderID; }
         set { orderID = value; }
+    }
+
+    public float gs_TM
+    {
+        get { return turnMeter; }
+        set { turnMeter = value; }
     }
 }

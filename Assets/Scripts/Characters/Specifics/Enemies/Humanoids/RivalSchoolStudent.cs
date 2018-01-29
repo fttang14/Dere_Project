@@ -9,14 +9,6 @@ public class RivalSchoolStudent : CharacterGeneric {
      * This script is a child of CharacterGeneric.
      */
 
-    CharacterStats RivalSchoolStudentStats;
-
-    //Update is called once per frame
-    void Update()
-    {
-
-    }
-
     /*
      * Specific to each character; Setting up the stats
      * for each character.
@@ -25,13 +17,8 @@ public class RivalSchoolStudent : CharacterGeneric {
     protected override void CharacterSetup()
     {
         base.CharacterSetup();
-        RivalSchoolStudentStats = new CharacterStats("RivalSchoolStudent", gameObject.tag, 70, 30, 8, 10, 7, 5, 0, 60, 0, 0);
+        characterStats = new CharacterStats("RivalSchoolStudent", gameObject.tag, 
+            70, 30, 8, 10, 7, 5, 0, 0, 60, 0, 0, 0);
 
-    }
-
-    //return all character stats for the Rival School Student
-    public CharacterStats ReturnStats
-    {
-        get { return RivalSchoolStudentStats; }
     }
 }

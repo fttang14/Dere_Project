@@ -10,7 +10,9 @@ public class CharacterGeneric : MonoBehaviour {
      * this script.
      */
 
-    protected Rigidbody2D rb2d;
+    protected CharacterStats characterStats;    //stats of the current character
+    protected Rigidbody2D rb2d; //the 2D Rigidbody of the object
+
 
 	// Use this for initialization
 	protected void Awake () {
@@ -18,18 +20,32 @@ public class CharacterGeneric : MonoBehaviour {
         CharacterSetup();
     }
 
-    protected void Start()
-    {
-        
-    }
-
     /*
      * Specific to each character; Setting up the stats
-     * for each character.
+     * for each character. The function will also set if
+     * the character will have either a player or enemy
+     * controller script attached.
      */
 
     protected virtual void CharacterSetup()
     {
-        Debug.Log("Setting up character...");
+        if (gameObject.tag.ToUpper().Equals("PLAYER"))
+        {
+            gameObject.AddComponent<PlayerBattleController>();
+            gameObject.GetComponent<PlayerBattleController>().enabled = false;
+        }
+
+        else if (gameObject.tag.ToUpper().Equals("ENEMY"))
+        {
+            gameObject.AddComponent<EnemyBattleController>();
+            gameObject.GetComponent<EnemyBattleController>().enabled = false;
+        }
+
+        //Debug.Log("Setting up character...");
+    }
+
+    public CharacterStats ReturnStats
+    {
+        get { return characterStats; }
     }
 }
