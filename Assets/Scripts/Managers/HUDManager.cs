@@ -72,6 +72,7 @@ public class HUDManager : MonoBehaviour {
                     /*** HUD ***/
                     //instantiate and activate the player HUDs
                     instantiatedHUD.Add(Instantiate(g));
+                    instantiatedHUD[index].name = c.g_NAME + "HUD";
                     instantiatedHUD[index].SetActive(true);
                     instantiatedHUD[index].transform.SetParent(GameObject.Find("Canvas").transform);
 
@@ -197,4 +198,13 @@ public class HUDManager : MonoBehaviour {
         st.GetComponent<Text>().text = c.gs_SP.ToString();
     }
 
+
+    //Updating HP values from battle
+    public void UpdatingHP()
+    {
+        foreach(GameObject ht in instantiatedHT)
+        {
+
+        }
+    }
 }

@@ -24,13 +24,13 @@ public class CharacterStats {
     int experiencePoints;   //EXP: the character's experience points;
                             //increases every time EXM % 100 = 0 &&
                             //EXM != 0
-    int form;               //FORM: the character's current form
+    int battleID;           //BID: the character's battle ID (will reset every battle)
     float turnMeter;        //TM: meter that increments over time to determine when the character can take action
     Transform position;     //POS: the character's battle position
 
     //default constructor for all characters
     public CharacterStats(string id, string alignment, int hp, int sp, int atk, int def, 
-        int spd, int luk, int ste, int exm, int exp, int phase, float tm, Transform pos)
+        int spd, int luk, int ste, int exm, int exp, int bid, float tm, Transform pos)
     {
 
         //String - setting up initial stat values
@@ -47,7 +47,7 @@ public class CharacterStats {
         state = ste;
         experienceMeter = exm;
         experiencePoints = exp;
-        form = phase;
+        battleID = bid;
 
         //float - setting up intial stat values
         turnMeter = tm;
@@ -131,10 +131,10 @@ public class CharacterStats {
         set { experiencePoints = value; }
     }
 
-    public int gs_FORM
+    public int gs_BID
     {
-        get { return form; }
-        set { form = value; }
+        get { return battleID; }
+        set { battleID = value; }
     }
 
     public float gs_TM

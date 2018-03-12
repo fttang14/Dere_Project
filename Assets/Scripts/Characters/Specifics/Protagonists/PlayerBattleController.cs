@@ -14,17 +14,44 @@ public class PlayerBattleController : BattleController {
 
     private void OnEnable()
     {
-        Debug.Log("This is " + gameObject.name + " and it is my " + turnNumber_test++ + " turn!");
+        
+        Debug.Log("This is " + gameObject.name + " and this controller's ID is: " + userID);
+        Debug.Log("Please press '1', '2', '3', or '4' to attack a target...");
         battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+
     }
 
     private void Update()
     {
         //TESTING
         //seeing if the turn-based mechanism is working properly
-        if (Input.GetKeyDown(KeyCode.Space))
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            battleManager.playerDecision(0);
+            battleManager.PlayerDecision(userID, 1);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            battleManager.PlayerDecision(userID, 2);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            battleManager.PlayerDecision(userID, 3);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            battleManager.PlayerDecision(userID, 4);
+        }
+
+    }
+
+    //setting up the id for each character
+    public override void SetupBID(int bid)
+    {
+        base.SetupBID(bid);
+        userID = bid;
     }
 }

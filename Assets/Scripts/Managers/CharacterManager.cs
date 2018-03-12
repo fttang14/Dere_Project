@@ -9,14 +9,6 @@ public class CharacterManager : MonoBehaviour {
      * and send it to the battle manager
      */
 
-    //bool transferReady; //key to determine whether to transfer
-                        //data to the battle manager
-
-    //int enemyOID;   //the order in which the players are 
-                    //registered in the roster
-    //int playerOID;  //the order in which the enemies are 
-                    //registered in the roster
-
     List<CharacterStats> roster;    //list of characters entering battle
     List<GameObject> playerObjects; //list of all players entering battle
     List<GameObject> enemyObjects;  //list of all enemies entering battle
@@ -31,9 +23,6 @@ public class CharacterManager : MonoBehaviour {
     //Initializing all private variables first
     private void Awake()
     {
-        //transferReady = false;
-        //enemyOID = 0;
-        //playerOID = 0;
         roster = new List<CharacterStats>();
         playerObjects = new List<GameObject>();
         enemyObjects = new List<GameObject>();

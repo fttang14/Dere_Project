@@ -26,6 +26,8 @@ public class BattleManager : MonoBehaviour
 
     float currentCoolDown;  //current value of the cool down
 
+    int battleID; //order in which the characters show up in battle
+
     List<CharacterStats> statistics;    //list of all the characters' stats
     List<CharacterStats> queue;         //when a character's cooldown is up, they will be placed here
     List<GameObject> playersInCombat;   //list of all the player game objects
@@ -47,6 +49,7 @@ public class BattleManager : MonoBehaviour
         turnReady = false;
         outOfQueue = false;
         co = null;
+        battleID = 0;
         queue = new List<CharacterStats> ();
         statistics = new List<CharacterStats>();
         playersInCombat = new List<GameObject>();
@@ -158,25 +161,37 @@ public class BattleManager : MonoBehaviour
         //adding character stats to a list and setting up
         //the cooldown for each character; randomized for
         //every battle...
+        //also setting battle ID for targeting specific
+        //enemies
         foreach (CharacterStats c in r)
         {
             currentCoolDown = Random.Range(0.0f, 0.5f);
             c.gs_TM = currentCoolDown;
+            c.gs_BID = (battleID % 4) + 1;
             statistics.Add(c);
+            battleID++;
         }
+
+        //create battle controller IDs
+        int playerID = 0;
+        int enemyID = 0;
 
         //all player characters will be entered into the
         //playersInCombat list...
         foreach (GameObject g in po)
         {
+            g.GetComponent<PlayerBattleController>().SetupBID((playerID % 4) + 1);
             playersInCombat.Add(g);
+            playerID++;
 
         }
 
         //Same thing as above, except for enemies
         foreach (GameObject g in eo)
         {
+            g.GetComponent<EnemyBattleController>().SetupBID((enemyID % 4) + 1);
             enemiesInCombat.Add(g);
+            enemyID++;
 
         }
 
@@ -185,6 +200,9 @@ public class BattleManager : MonoBehaviour
 
         //activating the HUDs for each character
         HUD.ActivateHUD(statistics);
+
+        //DEBUGGING
+        DisplayRoster_Test();
     }
 
     /// <summary>
@@ -193,10 +211,28 @@ public class BattleManager : MonoBehaviour
     /// NOTE: THIS IS JUST FOR TESTING THE BATTLE SYSTEM.
     /// THIS WILL CHANGE LATER.
     /// </summary>
-    public void playerDecision(int decide)
+    public void PlayerDecision(int player, int enemy)
     {
-        if(decide == 0)
+        bool enemyFound = false; //this determines if the enemy still exists or not...
+
+        //search for the enemy with the given ID provided by
+        //the decide input
+        foreach (CharacterStats c in statistics) {
+            if(c.g_SIDE.ToUpper().Equals("ENEMY") && c.gs_BID.Equals(enemy))
+            {
+                Debug.Log("Player has attacked " + c.g_NAME + " !!!");
+
+                //DAMAGE CALCULATION HERE
+                PlayerAttacking(player, enemy);
+
+                enemyFound = true;
+            }
+        }
+
+        //if the enemy has been found, attack that enemy!
+        if(enemyFound)
         {
+
             queue[0].gs_TM = 0;
             foreach(GameObject g in playersInCombat)
             {
@@ -209,6 +245,11 @@ public class BattleManager : MonoBehaviour
             if(queue.Count <= 0) { movingOn = true; turnReady = false; }
             outOfQueue = false;
         }
+
+        else
+        {
+            Debug.Log("Enemy could not be found. Please try again...");
+        }
     }
 
     /// <summary>
@@ -217,10 +258,32 @@ public class BattleManager : MonoBehaviour
     /// NOTE: THIS IS JUST FOR TESTING THE BATTLE SYSTEM.
     /// THIS WILL CHANGE LATER.
     /// </summary>
-    public void enemyDecision(int decide)
+    public bool EnemyDecision(int enemy, int player)
     {
-        if(decide == 0)
+        bool playerFound = false; //this determines if the enemy still exists or not...
+
+        //search for the enemy with the given ID provided by
+        //the decide input
+        foreach (CharacterStats c in statistics)
         {
+            if (c.g_SIDE.ToUpper().Equals("PLAYER") && c.gs_BID.Equals(player))
+            {
+
+                Debug.Log("Enemy has attacked " + c.g_NAME + " !!!");
+
+                //DAMAGE CALCULATION HERE
+                EnemyAttacking(enemy, player);
+
+                playerFound = true;
+            }
+        }
+
+        //if the player has been found, attack that player!
+        if (playerFound)
+        {
+            //DAMAGE CALCULATION HERE
+
+
             queue[0].gs_TM = 0;
             foreach (GameObject g in enemiesInCombat)
             {
@@ -233,6 +296,15 @@ public class BattleManager : MonoBehaviour
             queue.RemoveAt(0);
             if(queue.Count <= 0) { movingOn = true; turnReady = false; }
             outOfQueue = false;
+
+            return false;
+        }
+
+        else
+        {
+            Debug.Log("Target could not be found. Retrying...");
+
+            return true;
         }
     }
 
@@ -256,7 +328,7 @@ public class BattleManager : MonoBehaviour
                         ", STE: " + cs.gs_STE +
                         ", EXM: " + cs.gs_EXM +
                         ", EXP: " + cs.gs_EXP +
-                        ", FORM: " + cs.gs_FORM +
+                        ", BID: " + cs.gs_BID +
                         ", TM: " + cs.gs_TM + 
                         ", POS: " + cs.gs_POS.position);
         }
@@ -296,5 +368,46 @@ public class BattleManager : MonoBehaviour
         }
 
         yield return null;
+    }
+
+    //Damage output from player to enemy
+    void PlayerAttacking(int p, int e)
+    {
+        int pATK = 0, eDEF = 0, eHP = 0, dmg = 0;
+
+
+        //search for the player, and record its attack power
+        foreach (CharacterStats cs in statistics)
+        {
+
+            if (cs.gs_BID.Equals(p) && cs.g_SIDE.ToUpper().Equals("PLAYER"))
+            {
+                pATK = cs.gs_ATK;
+            }
+        }
+
+        //search for the enemy, and record its defense and health
+        foreach (CharacterStats cs in statistics)
+        {
+            //calculate damage, and apply it to the HUD
+            if (cs.gs_BID.Equals(e) && cs.g_SIDE.ToUpper().Equals("ENEMY"))
+            {
+                eHP = cs.gs_HP;
+                eDEF = cs.gs_DEF;
+                dmg = (pATK - eDEF) > 0  ? (pATK - eDEF) : 0;
+
+                cs.gs_HP = eHP - dmg;
+
+
+            }
+        }
+    }
+
+    //Damage output from enemy to player
+    void EnemyAttacking(int e, int p)
+    {
+        int eATK = 0; int pDEF = 0;
+
+        //search for the enemy first
     }
 }

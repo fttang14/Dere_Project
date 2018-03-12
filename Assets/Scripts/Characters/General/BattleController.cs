@@ -15,6 +15,7 @@ public class BattleController : MonoBehaviour {
                                 //and only take action when ready
 
     protected int turnNumber_test;   //TESTING; seeing where errors occur
+    protected int userID;   //determine whose turn it is...
 
     //positions for the characters to be in;
     //all characters should have WAIT as default
@@ -35,8 +36,14 @@ public class BattleController : MonoBehaviour {
     //crash the game...
     protected void Awake()
     {
+        userID = 0;
         turnNumber_test = 0;
         takeAction = false;
         this.enabled = false;
+    }
+
+    public virtual void SetupBID(int bid)
+    {
+        //Debug.Log("Setting up BID...");
     }
 }
