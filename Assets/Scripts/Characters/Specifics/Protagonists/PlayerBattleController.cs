@@ -12,4 +12,19 @@ public class PlayerBattleController : BattleController {
      * Battle Controller
      */
 
+    private void OnEnable()
+    {
+        Debug.Log("This is " + gameObject.name + " and it is my " + turnNumber_test++ + " turn!");
+        battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+    }
+
+    private void Update()
+    {
+        //TESTING
+        //seeing if the turn-based mechanism is working properly
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            battleManager.playerDecision(0);
+        }
+    }
 }

@@ -1,11 +1,16 @@
 fileFormatVersion: 2
-guid: acc2efcd4a4cda14fa0dc9b4a2ea48ba
-timeCreated: 1517517841
+guid: d3dfdedcd120ced48a7da8702b49fdcc
+timeCreated: 1518074520
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Tsundere_0_Form_0
-    21300002: Tsundere_0_Form_1
+    21300000: MP
+    21300002: HP
+    21300004: Dandere_HUD
+    21300006: Kuudere_HUD
+    21300008: Yandere_HUD
+    21300010: Tsundere_HUD
+    21300012: Enemy_HUD
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -80,28 +85,93 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tsundere_0_Form_0
+      name: MP
       rect:
         serializedVersion: 2
-        x: 80
-        y: 88
-        width: 96
-        height: 80
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 85
+        y: 496
+        width: 35
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Tsundere_0_Form_1
+      name: HP
       rect:
         serializedVersion: 2
-        x: 336
-        y: 88
-        width: 96
-        height: 72
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 182
+        y: 497
+        width: 35
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Dandere_HUD
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 487
+        width: 221
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Kuudere_HUD
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 488
+        width: 221
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Yandere_HUD
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 371
+        width: 221
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Tsundere_HUD
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 367
+        width: 221
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Enemy_HUD
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 368
+        width: 221
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0

@@ -19,7 +19,7 @@ public class Dandere : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("Dandere", gameObject.tag, 
-            80, 130, 10, 6, 10, 13, 0, 0, 0, 0, 0, 0);
+            80, 130, 10, 6, 10, 13, 0, 0, 0, 0, 0, gameObject.transform);
 
     }
 }

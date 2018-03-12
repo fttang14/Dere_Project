@@ -9,12 +9,13 @@ public class CharacterManager : MonoBehaviour {
      * and send it to the battle manager
      */
 
-    bool transferReady; //key to determine whether to transfer
+    //bool transferReady; //key to determine whether to transfer
                         //data to the battle manager
 
-    int orderID;    //the order in which the characters are 
+    //int enemyOID;   //the order in which the players are 
                     //registered in the roster
-                    
+    //int playerOID;  //the order in which the enemies are 
+                    //registered in the roster
 
     List<CharacterStats> roster;    //list of characters entering battle
     List<GameObject> playerObjects; //list of all players entering battle
@@ -23,20 +24,23 @@ public class CharacterManager : MonoBehaviour {
     public AllCharacterList allCharacters; //list of all characters ever created
     public GameObject battleManager;    //the battle manager game object
     public GameObject backgroundCheck;  //a the background game object
+    public GameObject HUD;  //the HUDs of all the characters
     public List<Transform> playerSpawn; //list of all player spawn points
     public List<Transform> enemySpawn;  //list of all enemy spawn points
 
     //Initializing all private variables first
     private void Awake()
     {
-        transferReady = false;
-        orderID = 0;
+        //transferReady = false;
+        //enemyOID = 0;
+        //playerOID = 0;
         roster = new List<CharacterStats>();
         playerObjects = new List<GameObject>();
         enemyObjects = new List<GameObject>();
         battleManager.SetActive(false); //activating the battle manager once
                                         //all the characters have been
                                         //added to their proper lists...
+        HUD.SetActive(false);
     }
 
     //Initializing the scene with all the startup functions
@@ -60,6 +64,8 @@ public class CharacterManager : MonoBehaviour {
 
         battleManager.SetActive(true);  //once everything has been set up,
                                         //activate the battle manager
+
+        HUD.SetActive(true);
         
 
         //transfer data from Character to Battle Manager
@@ -123,32 +129,32 @@ public class CharacterManager : MonoBehaviour {
             if (g.name.ToUpper().Contains("DANDERE"))
             {
                 Dandere de = g.GetComponent<Dandere>();
-                de.ReturnStats.gs_OID = orderID;
+                de.ReturnStats.gs_POS = g.transform;
                 roster.Add(de.ReturnStats);
             }
 
             else if (g.name.ToUpper().Contains("KUUDERE"))
             {
                 Kuudere ke = g.GetComponent<Kuudere>();
-                ke.ReturnStats.gs_OID = orderID;
+                ke.ReturnStats.gs_POS = g.transform;
                 roster.Add(ke.ReturnStats);
             }
 
             else if (g.name.ToUpper().Contains("TSUNDERE"))
             {
                 Tsundere te = g.GetComponent<Tsundere>();
-                te.ReturnStats.gs_OID = orderID;
+                te.ReturnStats.gs_POS = g.transform;
                 roster.Add(te.ReturnStats);
             }
 
             else if (g.name.ToUpper().Contains("YANDERE"))
             {
                 Yandere ye = g.GetComponent<Yandere>();
-                ye.ReturnStats.gs_OID = orderID;
+                ye.ReturnStats.gs_POS = g.transform;
                 roster.Add(ye.ReturnStats);
             }
 
-            orderID++;
+            //playerOID++;
         }
     }
 
@@ -165,27 +171,26 @@ public class CharacterManager : MonoBehaviour {
             if (g.name.ToUpper().Contains("PINKSLIME"))
             {
                 PinkSlime ps = g.GetComponent<PinkSlime>();
-                ps.ReturnStats.gs_OID = orderID;
+                ps.ReturnStats.gs_POS = g.transform;
                 roster.Add(ps.ReturnStats);
             }
 
             else if (g.name.ToUpper().Contains("RIVALSCHOOLSTUDENT"))
             {
                 RivalSchoolStudent rss = g.GetComponent<RivalSchoolStudent>();
-                rss.ReturnStats.gs_OID = orderID;
+                rss.ReturnStats.gs_POS = g.transform;
                 roster.Add(rss.ReturnStats);
             }
 
             else if (g.name.ToUpper().Contains("SMALLVIRUS"))
             {
                 SmallVirus sv = g.GetComponent<SmallVirus>();
-                sv.ReturnStats.gs_OID = orderID;
+                sv.ReturnStats.gs_POS = g.transform;
                 roster.Add(sv.ReturnStats);
             }
 
-            orderID++;
+            //enemyOID++;
         }
-
     }
 
     /*

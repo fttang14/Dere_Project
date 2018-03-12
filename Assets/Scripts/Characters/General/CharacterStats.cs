@@ -10,46 +10,50 @@ public class CharacterStats {
 	*/
 
     //setting up the initial values
-    string name;        //NAME: the name of the character
-    string side;        //SIDE: the alignment of the character (Player, Enemy, NPC)
-    int healthPoints;   //HP: the character's health points
-    int skillPoints;    //SP: the character's skill points 
-    int attackPoints;   //ATK: the character's attack points
-    int defensePoints;  //DEF: the character's defense points
-    int speedPoints;    //SPD: the character's speed points
-    int luckPoints;     //LUK: the character's luck points
-    int position;       //POS: the character's current position
+    string name;            //NAME: the name of the character
+    string side;            //SIDE: the alignment of the character (Player, Enemy, NPC)
+    int healthPoints;       //HP: the character's health points
+    int skillPoints;        //SP: the character's skill points 
+    int attackPoints;       //ATK: the character's attack points
+    int defensePoints;      //DEF: the character's defense points
+    int speedPoints;        //SPD: the character's speed points
+    int luckPoints;         //LUK: the character's luck points
+    int state;              //STE: the character's current state
     int experienceMeter;    //EXM: the character's experience meter;
                             //ranges from 0 to 100
     int experiencePoints;   //EXP: the character's experience points;
                             //increases every time EXM % 100 = 0 &&
                             //EXM != 0
-    int form;   //FORM: the character's current form
-    int orderID;  //OID: the order in which the character is in the roster
-    float turnMeter;  //TM: meter that increments over time to determine when the character can take action
+    int form;               //FORM: the character's current form
+    float turnMeter;        //TM: meter that increments over time to determine when the character can take action
+    Transform position;     //POS: the character's battle position
 
     //default constructor for all characters
     public CharacterStats(string id, string alignment, int hp, int sp, int atk, int def, 
-        int spd, int luk, int pos, int exm, int exp, int phase, int order, float tm)
+        int spd, int luk, int ste, int exm, int exp, int phase, float tm, Transform pos)
     {
 
-        //setting up initial stat values
+        //String - setting up initial stat values
         name = id;
         side = alignment;
 
+        //int - setting up intial stat values
         healthPoints = hp;
         skillPoints = sp;
         attackPoints = atk;
         defensePoints = def;
         speedPoints = spd;
         luckPoints = luk;
-        position = pos;
+        state = ste;
         experienceMeter = exm;
         experiencePoints = exp;
         form = phase;
-        orderID = order;
 
+        //float - setting up intial stat values
         turnMeter = tm;
+
+        //Transform - setting up initial stat values
+        position = pos;
     }
 
     //special addition for certain characters;
@@ -109,10 +113,10 @@ public class CharacterStats {
         set { luckPoints = value; }
     }
 
-    public int gs_POS
+    public int gs_STE
     {
-        get { return position; }
-        set { position = value; }
+        get { return state; }
+        set { state = value; }
     }
 
     public int gs_EXM
@@ -133,15 +137,15 @@ public class CharacterStats {
         set { form = value; }
     }
 
-    public int gs_OID
-    {
-        get { return orderID; }
-        set { orderID = value; }
-    }
-
     public float gs_TM
     {
         get { return turnMeter; }
         set { turnMeter = value; }
+    }
+
+    public Transform gs_POS
+    {
+        get { return position; }
+        set { position = value; }
     }
 }

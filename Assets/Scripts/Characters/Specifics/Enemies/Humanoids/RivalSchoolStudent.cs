@@ -18,7 +18,7 @@ public class RivalSchoolStudent : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("RivalSchoolStudent", gameObject.tag, 
-            70, 30, 8, 10, 7, 5, 0, 0, 60, 0, 0, 0);
+            70, 30, 8, 10, 7, 5, 0, 0, 60, 0, 0, gameObject.transform);
 
     }
 }

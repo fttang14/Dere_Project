@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 6ce7f2198bf1b0f499753d5a8d8260d1
-timeCreated: 1516130620
+guid: c8d80b7be6bd9dd4ea681f0364b43ef8
+timeCreated: 1517517854
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -84,7 +84,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 88
+        y: 344
         width: 96
         height: 80
       alignment: 7
@@ -96,7 +96,7 @@ TextureImporter:
       name: Kuudere_0_Form_1
       rect:
         serializedVersion: 2
-        x: 336
+        x: 80
         y: 88
         width: 96
         height: 72

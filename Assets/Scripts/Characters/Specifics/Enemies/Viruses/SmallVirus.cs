@@ -18,7 +18,7 @@ public class SmallVirus : CharacterGeneric{
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("SmallVirus", gameObject.tag, 
-            60, 20, 6, 4, 12, 2, 0, 0, 45, 0, 0, 0);
+            60, 20, 6, 4, 12, 2, 0, 0, 45, 0, 0, gameObject.transform);
     }
 
 }

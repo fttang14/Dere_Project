@@ -19,7 +19,7 @@ public class Kuudere : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("Kuudere", gameObject.tag, 
-            120, 80, 8, 12, 9, 7, 0, 0, 0, 0, 0, 0);
+            120, 80, 8, 12, 9, 7, 0, 0, 0, 0, 0, gameObject.transform);
  
     }
 }

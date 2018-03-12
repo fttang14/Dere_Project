@@ -18,7 +18,7 @@ public class PinkSlime : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("PinkSlime", gameObject.tag, 
-            50, 10, 4, 5, 7, 3, 0, 0, 30, 0, 0, 0);
+            50, 10, 4, 5, 7, 3, 0, 0, 30, 0, 0, gameObject.transform);
  
     }
 }

@@ -18,7 +18,7 @@ public class Yandere : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("Yandere", gameObject.tag, 
-            100, 60, 15, 7, 14, 8, 0, 0, 0, 0, 0, 0);
+            100, 60, 15, 7, 14, 8, 0, 0, 0, 0, 0, gameObject.transform);
  
     }
 }

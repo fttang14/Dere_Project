@@ -18,7 +18,7 @@ public class Tsundere : CharacterGeneric {
     {
         base.CharacterSetup();
         characterStats = new CharacterStats("Tsundere", gameObject.tag, 
-            90, 110, 9, 10, 11, 8, 0, 0, 0, 0, 0, 0);
+            90, 110, 9, 10, 11, 8, 0, 0, 0, 0, 0, gameObject.transform);
 
     }
 }
