@@ -5,15 +5,17 @@ using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
+    /// <summary>
+    /// This script will manage how battles are taken place.
+    /// </summary>
 
-    /*
-     * This script will manage how battles will be taking place.
-    */
+    /*** VARIABLES ***/
 
     bool executeTurn;   //whatever action is going on
     bool turnReady;     //determines if one of the character's is ready to take action
-    bool outOfQueue;    //determine if character is no longer in queue
+    //bool outOfQueue;    //determine if character is no longer in queue
     bool movingOn;    //determines if the battle will continue after character takes action
+    bool characterDead; //take out a character from the roster if they are dead
 
     Coroutine co;   //the coroutine
 
@@ -26,7 +28,7 @@ public class BattleManager : MonoBehaviour
 
     float currentCoolDown;  //current value of the cool down
 
-    int battleID; //order in which the characters show up in battle
+    //int battleID; //order in which the characters show up in battle
 
     List<CharacterStats> statistics;    //list of all the characters' stats
     List<CharacterStats> queue;         //when a character's cooldown is up, they will be placed here
@@ -36,32 +38,28 @@ public class BattleManager : MonoBehaviour
     EnemyBattleController ebc;  //the enemy's battle controller
     PlayerBattleController pbc; //the player's battle controller
 
-    public CharacterManager characterManager; //grabbing the Game Manager script
-    public float maxCoolDown = 1.0f;    //100% ; turn meter ratio
-    public float turnRate = 0.4f;   //determines how fast the turn meter will increment
-    public HUDManager HUD;  //manages the HUD of each character
+    public CharacterManager characterManager; 	//grabbing the Game Manager script
+    public float maxCoolDown = 1.0f;    		//100% ; turn meter ratio
+    public float turnRate = 0.4f;   			//determines how fast the turn meter will increment
+    public HUDManager HUD;  					//manages the HUD of each character
+
+    /*** FUNCTIONS ***/
 
     // Use this for initialization
     void Awake()
     {
         executeTurn = false;
         movingOn = false;
+        characterDead = false;
         turnReady = false;
-        outOfQueue = false;
+        //outOfQueue = false;
         co = null;
-        battleID = 0;
-        queue = new List<CharacterStats> ();
+        //battleID = 0;
+        queue = new List<CharacterStats>();
         statistics = new List<CharacterStats>();
         playersInCombat = new List<GameObject>();
         enemiesInCombat = new List<GameObject>();
 
-    }
-
-    // The start function will start the ienumerator and
-    // coroutine for the battle...
-    void Start()
-    {
-        co = StartCoroutine("AwaitingAction");
     }
 
     // Update is called once per frame
@@ -69,48 +67,22 @@ public class BattleManager : MonoBehaviour
     {
         //if any characters are in queue, execute
         //their turns in order
-        if (executeTurn)
+        if (executeTurn && queue.Count > 0)
         {
-            //stop cooldown, and run queue coroutine
+
+            //stop cooldown, and let players in queue take action
             StopCoroutine(co);
-            co = StartCoroutine("CharacterPhase");
+            ControllerEnabler();
             executeTurn = false;
         }
 
         else if (movingOn)
         {
+            
             //stop queue, and run cooldown coroutine
             StopCoroutine(co);
             co = StartCoroutine("AwaitingAction");
             movingOn = false;
-        }
-    }
-
-    //this function will increment the cool down timer;
-    //applied to Update
-    void CoolDownTimer()
-    {
-        //returning nothing if there are no stats in the list
-        if (statistics.Count <= 0) return;
-
-        //else, continue the code
-        foreach(CharacterStats c in statistics)
-        {
-
-            //if cooldown is at max, add them to the queue
-            if(c.gs_TM >= maxCoolDown)
-            {
-                c.gs_TM = 1.0f;
-                c.gs_STE = (int)Position.INQUEUE;
-                queue.Add(c);
-                turnReady = true;
-            }
-
-            //update everyone's cooldown rate
-            else
-            {   
-                c.gs_TM += turnRate * Time.deltaTime;
-            }
         }
     }
 
@@ -121,33 +93,47 @@ public class BattleManager : MonoBehaviour
         //can take their turn
         queue[0].gs_STE = (int)Position.ACTION;
 
-        //if it's a player, search for their battle
-        //controller and turn it on
+        //if it's a player, search for their battle controller and turn it on
         if (queue[0].g_SIDE.ToUpper().Equals("PLAYER"))
         {
-            foreach(GameObject g in playersInCombat)
+            int BID_index = queue[0].gs_BID;
+            playersInCombat[BID_index].GetComponent<PlayerBattleController>().enabled = true;
+
+            /*
+            for(int i = 0; i < playersInCombat.Count; i++)
             {
-                if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
+                if (playersInCombat[i].name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
                 {
-                    g.GetComponent<PlayerBattleController>().enabled = true;
+                    playersInCombat[i].GetComponent<PlayerBattleController>().enabled = true;
+                    break;
                 }
             }
+            */
         }
 
         //same goes if the character is an enemy
         else if (queue[0].g_SIDE.ToUpper().Equals("ENEMY"))
         {
-            foreach (GameObject g in enemiesInCombat)
+
+            int BID_index = queue[0].gs_BID % 4;
+
+            //DEBUGGING
+            Debug.Log("Enemy BID: " + BID_index);
+
+            enemiesInCombat[BID_index].GetComponent<EnemyBattleController>().enabled = true;
+            /*
+            for (int j = 0; j < enemiesInCombat.Count; j++)
             {
-                if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()) &&
-                    g.transform.position.Equals(queue[0].gs_POS.position))
+                if(j == (queue[0].gs_BID % enemiesInCombat.Count))
                 {
-                    g.GetComponent<EnemyBattleController>().enabled = true;
+                    enemiesInCombat[j].GetComponent<EnemyBattleController>().enabled = true;
+                    break;
                 }
             }
+            */
         }
 
-        outOfQueue = true;
+        //outOfQueue = true; //prevent any other characters in queue from having their controllers activated
     }
 
     /// <summary>
@@ -158,41 +144,33 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void TransferFromGM(List<CharacterStats> r, List<GameObject> po, List<GameObject> eo)
     {
-        //adding character stats to a list and setting up
-        //the cooldown for each character; randomized for
-        //every battle...
-        //also setting battle ID for targeting specific
-        //enemies
-        foreach (CharacterStats c in r)
+        //adding character stats to a list and setting up the cooldown for each character;
+        //randomized for every battle.
+        foreach (CharacterStats cs in r)
         {
+            //randomize cooldown for each character at the start of battle
             currentCoolDown = Random.Range(0.0f, 0.5f);
-            c.gs_TM = currentCoolDown;
-            c.gs_BID = (battleID % 4) + 1;
-            statistics.Add(c);
-            battleID++;
-        }
+            cs.gs_TM = currentCoolDown;
 
-        //create battle controller IDs
-        int playerID = 0;
-        int enemyID = 0;
+            cs.gs_DEF = 0;  //DEBUGGING: just to see pure damage output
 
-        //all player characters will be entered into the
-        //playersInCombat list...
-        foreach (GameObject g in po)
-        {
-            g.GetComponent<PlayerBattleController>().SetupBID((playerID % 4) + 1);
-            playersInCombat.Add(g);
-            playerID++;
+            //Setting up the battle controllers for players and enemies...
+            if (cs.g_SIDE.Equals("Player"))
+            {
+                int index = cs.gs_BID;
+                po[index].GetComponent<PlayerBattleController>().gs_BID = index;
+                playersInCombat.Add(po[index]);
+            }
 
-        }
+            else if (cs.g_SIDE.Equals("Enemy"))
+            {
+                int index = cs.gs_BID % 4;
+                eo[index].GetComponent<EnemyBattleController>().gs_BID = index;
+                enemiesInCombat.Add(eo[index]);
+            }
 
-        //Same thing as above, except for enemies
-        foreach (GameObject g in eo)
-        {
-            g.GetComponent<EnemyBattleController>().SetupBID((enemyID % 4) + 1);
-            enemiesInCombat.Add(g);
-            enemyID++;
-
+            //finally, add the character into the overall roster
+            statistics.Add(cs);
         }
 
         //turning off characterManager until battle is over
@@ -201,8 +179,11 @@ public class BattleManager : MonoBehaviour
         //activating the HUDs for each character
         HUD.ActivateHUD(statistics);
 
-        //DEBUGGING
+        //DEBUG
         DisplayRoster_Test();
+
+        // The coroutine will start when all the characters are in the roster
+        co = StartCoroutine("AwaitingAction");
     }
 
     /// <summary>
@@ -214,42 +195,55 @@ public class BattleManager : MonoBehaviour
     public void PlayerDecision(int player, int enemy)
     {
         bool enemyFound = false; //this determines if the enemy still exists or not...
+        int BID_enemy = enemy + 4;  //there are 4 players total, and enemies come after
+        int BID_player = player;
 
         //search for the enemy with the given ID provided by
-        //the decide input
-        foreach (CharacterStats c in statistics) {
-            if(c.g_SIDE.ToUpper().Equals("ENEMY") && c.gs_BID.Equals(enemy))
-            {
-                Debug.Log("Player has attacked " + c.g_NAME + " !!!");
-
-                //DAMAGE CALCULATION HERE
-                PlayerAttacking(player, enemy);
-
-                enemyFound = true;
-            }
-        }
-
-        //if the enemy has been found, attack that enemy!
-        if(enemyFound)
+        //the decide input, provided that they are not dead already
+        if(enemy >= enemiesInCombat.Count)
         {
-
-            queue[0].gs_TM = 0;
-            foreach(GameObject g in playersInCombat)
-            {
-                if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
-                {
-                    g.GetComponent<PlayerBattleController>().enabled = false;
-                }
-            }
-            queue.RemoveAt(0);
-            if(queue.Count <= 0) { movingOn = true; turnReady = false; }
-            outOfQueue = false;
+            Debug.Log("Index out of bounds. Try again...");
         }
 
         else
         {
-            Debug.Log("Enemy could not be found. Please try again...");
+            if (!statistics[BID_enemy].gs_DEAD)
+            {
+                Debug.Log("Player has attacked " + statistics[BID_enemy].g_NAME + " !!!");
+                //DAMAGE CALCULATION HERE
+                PlayerAttacking(BID_player, BID_enemy);
+
+                enemyFound = true;
+            }
+
+            //if the enemy has been found, attack that enemy!
+            if (enemyFound)
+            {
+
+                queue[0].gs_TM = 0;
+                playersInCombat[BID_player].GetComponent<PlayerBattleController>().enabled = false;
+
+                /*
+                foreach(GameObject g in playersInCombat)
+                {
+                    if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
+                    {
+                        g.GetComponent<PlayerBattleController>().enabled = false;
+                    }
+                }
+                */
+
+                queue.RemoveAt(0);
+                if (queue.Count <= 0) { movingOn = true; turnReady = false; }
+                else { executeTurn = true; }
+            }
+
+            else
+            {
+                Debug.Log("Enemy could not be found. Please try again...");
+            }
         }
+        
     }
 
     /// <summary>
@@ -261,30 +255,28 @@ public class BattleManager : MonoBehaviour
     public bool EnemyDecision(int enemy, int player)
     {
         bool playerFound = false; //this determines if the enemy still exists or not...
+        int BID_player = player;  //there are 4 players total, and enemies come after
+        int BID_enemy = enemy % 4;
 
         //search for the enemy with the given ID provided by
-        //the decide input
-        foreach (CharacterStats c in statistics)
+        //the decide input, provided that they are not dead already
+        if (!statistics[BID_player].gs_DEAD)
         {
-            if (c.g_SIDE.ToUpper().Equals("PLAYER") && c.gs_BID.Equals(player))
-            {
+            Debug.Log("Enemy has attacked " + statistics[BID_player].g_NAME + " !!!");
 
-                Debug.Log("Enemy has attacked " + c.g_NAME + " !!!");
-
-                //DAMAGE CALCULATION HERE
-                EnemyAttacking(enemy, player);
-
-                playerFound = true;
-            }
+            //DAMAGE CALCULATION HERE
+            EnemyAttacking(enemy, BID_player);
+            playerFound = true;
         }
 
         //if the player has been found, attack that player!
         if (playerFound)
         {
-            //DAMAGE CALCULATION HERE
-
 
             queue[0].gs_TM = 0;
+            enemiesInCombat[BID_enemy].GetComponent<EnemyBattleController>().enabled = false;
+
+            /*
             foreach (GameObject g in enemiesInCombat)
             {
                 if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()) &&
@@ -293,9 +285,11 @@ public class BattleManager : MonoBehaviour
                     g.GetComponent<EnemyBattleController>().enabled = false;
                 }
             }
+			*/
+
             queue.RemoveAt(0);
-            if(queue.Count <= 0) { movingOn = true; turnReady = false; }
-            outOfQueue = false;
+            if (queue.Count <= 0) { movingOn = true; turnReady = false; }
+            else { executeTurn = true; }
 
             return false;
         }
@@ -308,13 +302,11 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    //if the spot that the character selected contains
-    //no enemy, let the player decide again
-
     //This function displays the full roster
     //JUST FOR DEBUGGING PURPOSES
     public void DisplayRoster_Test()
     {
+        /*
         foreach (CharacterStats cs in statistics)
         {
             Debug.Log("NAME: " + cs.g_NAME +
@@ -332,11 +324,17 @@ public class BattleManager : MonoBehaviour
                         ", TM: " + cs.gs_TM + 
                         ", POS: " + cs.gs_POS.position);
         }
+        */
+
+        //DEBUGGING
+        Debug.Log("Players in Combat: " + playersInCombat.Count);
+        Debug.Log("Enemies in Combat: " + enemiesInCombat.Count);
     }
 
     //manages timers during battle
     IEnumerator AwaitingAction()
     {
+
         //run the cool down timer while no one has
         //max cooldown yet
         while (!turnReady)
@@ -352,62 +350,115 @@ public class BattleManager : MonoBehaviour
 
     }
 
-    //let the characters in queue take their turns
-    IEnumerator CharacterPhase()
+    //this function will increment the cool down timer;
+    //applied to Update
+    void CoolDownTimer()
     {
-        //as long as the queue is not empty
-        //and the front of the queue is not
-        //deciding on an action yet, activate
-        //their battle controller
-        while(queue.Count > 0 && !outOfQueue)
-        {
-            //let whoever is in front of the queue
-            //take their turn
-            ControllerEnabler();
-            yield return null;
-        }
+        //returning nothing if there are no stats in the list
+        if (statistics.Count <= 0) return;
 
-        yield return null;
+        //else, continue the code
+        for (int cs_i = 0; cs_i < statistics.Count; cs_i++)
+        {
+            //if cooldown is at max, add them to the queue
+            if (statistics[cs_i].gs_TM >= maxCoolDown)
+            {
+                statistics[cs_i].gs_TM = 1.0f;
+                statistics[cs_i].gs_STE = (int)Position.INQUEUE;
+                queue.Add(statistics[cs_i]);
+                turnReady = true;
+            }
+
+            //update everyone's cooldown rate
+            else if(!statistics[cs_i].gs_DEAD)
+            {
+                statistics[cs_i].gs_TM += turnRate * Time.deltaTime;
+            }
+
+            //update the cooldown timer
+            HUD.UpdatingCD(statistics[cs_i].gs_TM, cs_i);
+        }
     }
 
     //Damage output from player to enemy
+    //p = player id, e = enemy id
     void PlayerAttacking(int p, int e)
     {
-        int pATK = 0, eDEF = 0, eHP = 0, dmg = 0;
+        //int pATK = 0, eDEF = 0, dmg = 0;
+        int player_ATK = 0, enemy_DEF = 0, damage = 0;
+
+        //get the player's attack power
+        player_ATK = statistics[p].gs_ATK;
+
+        //get the enemy's defense power
+        enemy_DEF = statistics[e].gs_DEF;
+
+        //calculate total damage
+        damage = (player_ATK - enemy_DEF) > 0 ? (player_ATK - enemy_DEF) : 0;
+
+        //apply damage to enemy's health
+        statistics[e].gs_HP -= damage;
 
 
-        //search for the player, and record its attack power
-        foreach (CharacterStats cs in statistics)
+        //determine if the enemy is dead
+        if (statistics[e].gs_HP <= 0)
         {
+            statistics[e].gs_HP = 0;
+            statistics[e].gs_DEAD = true;
 
-            if (cs.gs_BID.Equals(p) && cs.g_SIDE.ToUpper().Equals("PLAYER"))
-            {
-                pATK = cs.gs_ATK;
-            }
+            //disable the character once dead
+            WhoIsDead(statistics[e]);
+
+            characterDead = true;
         }
 
-        //search for the enemy, and record its defense and health
-        foreach (CharacterStats cs in statistics)
-        {
-            //calculate damage, and apply it to the HUD
-            if (cs.gs_BID.Equals(e) && cs.g_SIDE.ToUpper().Equals("ENEMY"))
-            {
-                eHP = cs.gs_HP;
-                eDEF = cs.gs_DEF;
-                dmg = (pATK - eDEF) > 0  ? (pATK - eDEF) : 0;
+        //Updating the health value
+        HUD.UpdatingHP(statistics[e].gs_HP, e);
 
-                cs.gs_HP = eHP - dmg;
-
-
-            }
-        }
     }
 
     //Damage output from enemy to player
     void EnemyAttacking(int e, int p)
     {
-        int eATK = 0; int pDEF = 0;
+        //since enemies are on the later half of the roster
+        //add 4 to their index
+        int enemy_ATK = statistics[e].gs_ATK;
 
-        //search for the enemy first
+        int player_DEF = statistics[p].gs_DEF;
+
+        //calculating damage output based on enemy's attack power
+        //and player character's defense value
+        int dmg = (enemy_ATK - player_DEF) > 0 ? (enemy_ATK - player_DEF) : 0;
+
+        //calculate the health loss, and then update it in HUD
+        statistics[p].gs_HP -= dmg;
+
+        //if the character loses all HP, label them dead
+        if (statistics[p].gs_HP <= 0)
+        {
+            statistics[p].gs_HP = 0;
+            statistics[p].gs_DEAD = true;
+            characterDead = true;
+        }
+
+        //Updating the health value
+        HUD.UpdatingHP(statistics[p].gs_HP, p);
     }
+
+    
+    //Find out who is dead, and remove them from the roster
+    void WhoIsDead(CharacterStats cs)
+    {
+        //determine if this character is a Player or an Enemy
+        if (cs.g_SIDE.Equals("Player"))
+        {
+            playersInCombat[cs.gs_BID].SetActive(false);
+        }
+
+        else if (cs.g_SIDE.Equals("Enemy"))
+        {
+            enemiesInCombat[cs.gs_BID % 4].SetActive(false);
+        }
+    }
+    
 }

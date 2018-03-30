@@ -4,21 +4,43 @@ using UnityEngine;
 
 public class Tsundere : CharacterGeneric {
 
-    /*
-     * This code is for the Tsundere.
-     * This script is a child of CharacterGeneric.
-     */
+    /// <summary>
+    /// This script is for the Tsundere, and is the child of CharacterGeneric
+    /// </summary>
 
-    /*
-     * Specific to each character; Setting up the stats
-     * for each character.
-     */
+    /*** FUNCTIONS ***/
 
+    //This function sets up the initial stats of the Tsundere
     protected override void CharacterSetup()
     {
         base.CharacterSetup();
-        characterStats = new CharacterStats("Tsundere", gameObject.tag, 
-            90, 110, 9, 10, 11, 8, 0, 0, 0, 0, 0, gameObject.transform);
+
+        //For reading purposes, these local variables will contain each stat to be entered, and then they will
+        //all be relayed to CharacterStats. It's quite redundant, but it's easier for me to read 
+        //and understand.
+
+        gameObject.name = "Tsundere";    //change the game object's name
+
+        string initNAME = gameObject.name;  //Name
+        string initSIDE = gameObject.tag;   //Side
+
+        int initHP = 90;   //Health Points
+        int initSP = 110;  //Skill Points
+        int initATK = 9;   //Attack Points
+        int initDEF = 10;    //Defense Points
+        int initSPD = 11;   //Speed Points
+        int initLUK = 8;   //Luck Points
+        int initSTE = 0;    //State (in terms of an integer)
+        int initEXM = 0;    //Experience Meter
+        int initEXP = 0;    //Experience Points
+        int initBID = 0;    //Battle ID
+        int initTM = 0;    //Turn Meter
+
+        Transform initPOS = gameObject.transform;   //Position (in terms of a transform)
+
+        //inserting all the defined variables into the CharacterStats, thus creating the character
+        characterStats = new CharacterStats(initNAME, initSIDE, initHP, initSP, initATK, initDEF, initSPD,
+            initLUK, initSTE, initEXM, initEXP, initBID, initTM, initPOS);
 
     }
 }

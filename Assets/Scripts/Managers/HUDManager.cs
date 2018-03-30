@@ -6,133 +6,163 @@ using UnityEngine.UI;
 public class HUDManager : MonoBehaviour {
 
     /// <summary>
-    /// This script will handle all the HUD updates
-    /// in the battle scene...
+    /// This script will handle all the HUD updates in the battle scene
     /// </summary>
 
+    /*** VARIABLES ***/
+
     //The HUD for each character
-    public List<GameObject> HUD;
+    public List<GameObject> playerHUD;
+    public GameObject enemyHUD;
+
     public GameObject healthIcon;
     public GameObject skillIcon;
     public GameObject healthText;
     public GameObject skillText;
 
-    //The instantiated HUD for each character
+    public GameObject coolDown;
+
+    //The instantiated HUD for each character, along with other icons and texts
     List<GameObject> instantiatedHUD;
     List<GameObject> instantiatedHealth;
     List<GameObject> instantiatedSkill;
     List<GameObject> instantiatedHT;
     List<GameObject> instantiatedST;
+    List<GameObject> instantiatedCD;
 
+    /*** FUNCTIONS ***/
 
     private void Awake()
     {
-        foreach(GameObject g in HUD)
+
+        //deactivate all the HUDs until values are set for each one
+        foreach (GameObject g in playerHUD)
         {
             g.SetActive(false);
-
         }
+        enemyHUD.SetActive(false);
+
 
         instantiatedHUD = new List<GameObject>();
         instantiatedHealth = new List<GameObject>();
         instantiatedSkill = new List<GameObject>();
         instantiatedHT = new List<GameObject>();
         instantiatedST = new List<GameObject>();
+        instantiatedCD = new List<GameObject>();
     }
 
-    // Use this for initialization
-    void Start () {
-        
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    // This function will use instantiate HUDs
-    // for each character on the field...
-    public void ActivateHUD(List<CharacterStats> r)
+    // This function will use instantiate HUDs for each character on the field; information relayed from
+    // BattleManager
+    public void ActivateHUD(List<CharacterStats> roster)
     {
-        //For every enemy on the field, create a new
-        //HUD for it by shifting pre-exisiting HUD
+        //For every enemy on the field, create a new HUD for it by shifting pre-existing HUD
         Vector2 enemyHUDShift = Vector2.left * 100;
         float shiftNumber = 0;
 
-        //index for instantiated HUD list
-        int index = 0;
-
-        foreach(CharacterStats c in r)
+        //setting up the HUD for each character
+        foreach(CharacterStats cs in roster)
         {
-            foreach(GameObject g in HUD)
+            //going through the HUD list to find the correct one to activate and modify
+            if (cs.g_SIDE.ToUpper().Equals("PLAYER"))
             {
-                //instantiating the player HUDs
-                if (g.name.ToUpper().Contains(c.g_NAME.ToUpper()))
+                //a temporary variable to store the character's name
+                string characterName = cs.g_NAME;
+
+                //going through the playerHUD list to find the correct one to activate and modify
+                foreach (GameObject g in playerHUD)
                 {
-                    /*** HUD ***/
-                    //instantiate and activate the player HUDs
-                    instantiatedHUD.Add(Instantiate(g));
-                    instantiatedHUD[index].name = c.g_NAME + "HUD";
-                    instantiatedHUD[index].SetActive(true);
-                    instantiatedHUD[index].transform.SetParent(GameObject.Find("Canvas").transform);
+                    //once a match has been found, start modifying each component of the HUD
+                    if (g.name.ToUpper().Contains(characterName.ToUpper()))
+                    {
+                        //create an instance of this game object so that it doesn't affect the actual prefab
+                        GameObject newG = Instantiate(g);
+                        newG.name = cs.g_NAME + "HUD";
 
-                    //get the rect transform of each HUD to position other HUD materials
-                    RectTransform rt = instantiatedHUD[index].GetComponent<RectTransform>();
+                        /*** HUD ***/
+                        newG.SetActive(true);
+                        newG.transform.SetParent(GameObject.Find("Canvas").transform);
 
-                    /*** HEALTH ***/
-                    //Instantiating and setting up health
-                    instantiatedHealth.Add(Instantiate(healthIcon));
-                    instantiatedHT.Add(Instantiate(healthText));
-                    SetupHP(instantiatedHealth[index], instantiatedHT[index], c, rt);
+                        //Next, setting up the Health and Skill values//
 
-                    /*** MANA ***/
-                    //Instantiating and setting up skill
-                    instantiatedSkill.Add(Instantiate(skillIcon));
-                    instantiatedST.Add(Instantiate(skillText));
-                    SetupMP(instantiatedSkill[index], instantiatedST[index], c, rt);
+                        //get the rect transform of each HUD to position other HUD materials
+                        RectTransform rt = newG.GetComponent<RectTransform>();
 
-                    break;
+                        //create instantiations of other game objects relative to HUD
+                        GameObject instantHI = Instantiate(healthIcon);
+                        GameObject instantHT = Instantiate(healthText);
+                        GameObject instantSI = Instantiate(skillIcon);
+                        GameObject instantST = Instantiate(skillText);
+                        GameObject instantCD = Instantiate(coolDown);
+
+                        /*** HEALTH ***/
+                        SetupHP(instantHI, instantHT, cs, rt);
+
+                        /*** SKILL ***/
+                        SetupMP(instantSI, instantST, cs, rt);
+
+                        /*** COOLDOWN ***/
+                        SetupCD(instantCD, cs, rt);
+
+                        /*** INSTANTIATE ***/
+                        instantiatedHUD.Add(newG);
+                        instantiatedHealth.Add(instantHI);
+                        instantiatedHT.Add(instantHT);
+                        instantiatedSkill.Add(instantSI);
+                        instantiatedST.Add(instantST);
+                        instantiatedCD.Add(instantCD);
+
+                        //go to the next character when finished
+                        break;
+                    }
                 }
-
-                //instantiating the enemy HUDs
-                else if(c.g_SIDE.ToUpper().Equals("ENEMY") &&
-                    g.tag.ToUpper().Equals(c.g_SIDE.ToUpper()))
-                {
-
-                    /*** HUD ***/
-                    //instantiate and activate the player HUDs
-                    instantiatedHUD.Add(Instantiate(g));
-                    instantiatedHUD[index].SetActive(true);
-                    instantiatedHUD[index].transform.SetParent(GameObject.Find("Canvas").transform);
-
-                    //get the rect transform of each HUD to position other HUD materials
-                    RectTransform rt = instantiatedHUD[index].GetComponent<RectTransform>();
-
-                    /*** HEALTH ***/
-                    //Instantiating and setting up health
-                    instantiatedHealth.Add(Instantiate(healthIcon));
-                    instantiatedHT.Add(Instantiate(healthText));
-                    SetupHP(instantiatedHealth[index], instantiatedHT[index], c, rt);
-
-                    /*** MANA ***/
-                    //Instantiating and setting up skill
-                    instantiatedSkill.Add(Instantiate(skillIcon));
-                    instantiatedST.Add(Instantiate(skillText));
-                    SetupMP(instantiatedSkill[index], instantiatedST[index], c, rt);
-
-                    //setting new anchor position for the enemy HUD
-                    rt.anchoredPosition = new Vector2(
-                        rt.position.x + (enemyHUDShift.x * shiftNumber),
-                        rt.position.y);
-
-                    shiftNumber++;
-
-                    break;
-                }
-                
             }
 
-            index++;
+            //now we go to the enemy
+            else if (cs.g_SIDE.ToUpper().Equals("ENEMY"))
+            {
+                /*** HUD ***/
+                GameObject newEnemyHUD = Instantiate(enemyHUD);  //create a new HUD for the enemy
+                newEnemyHUD.name = cs.g_NAME + "HUD";
+                newEnemyHUD.SetActive(true);
+                newEnemyHUD.transform.SetParent(GameObject.Find("Canvas").transform);
+
+                //Next, setting up the Health and Skill values//
+
+                //get the rect transform of each HUD to position other HUD materials
+                RectTransform rt = newEnemyHUD.GetComponent<RectTransform>();
+
+                //create instantiations of other game objects relative to HUD
+                GameObject instantHI = Instantiate(healthIcon);
+                GameObject instantHT = Instantiate(healthText);
+                GameObject instantSI = Instantiate(skillIcon);
+                GameObject instantST = Instantiate(skillText);
+                GameObject instantCD = Instantiate(coolDown);
+
+                /*** HEALTH ***/
+                SetupHP(instantHI, instantHT, cs, rt);
+
+                /*** SKILL ***/
+                SetupMP(instantSI, instantST, cs, rt);
+
+                /*** COOLDOWN ***/
+                SetupCD(instantCD, cs, rt);
+
+                //setting new anchor position for the enemy HUD
+                rt.anchoredPosition = new Vector2(
+                    rt.position.x + (enemyHUDShift.x * shiftNumber),
+                    rt.position.y);
+
+                /*** INSTANTIATE ***/
+                instantiatedHUD.Add(newEnemyHUD);
+                instantiatedHealth.Add(instantHI);
+                instantiatedHT.Add(instantHT);
+                instantiatedSkill.Add(instantSI);
+                instantiatedST.Add(instantST);
+                instantiatedCD.Add(instantCD);
+
+                //increment shifting value
+                shiftNumber++;
+            }
         }
     }
 
@@ -180,17 +210,19 @@ public class HUDManager : MonoBehaviour {
         //reset local position relative to its parent and then modify it
         if (c.g_SIDE.ToUpper().Equals("PLAYER"))
         {
-            si.transform.localPosition = Vector2.down * rt.position.y;
-            st.transform.localPosition = Vector2.down * rt.position.y;
+            Vector2 newPos = new Vector2(0, -0.5f);
+            si.transform.localPosition = newPos * rt.position.y;
+            st.transform.localPosition = newPos * rt.position.y;
         }
 
         else if (c.g_SIDE.ToUpper().Equals("ENEMY"))
         {
-            si.transform.localPosition = Vector2.up * rt.position.y;
-            st.transform.localPosition = Vector2.up * rt.position.y;
+            Vector2 newPos = new Vector2(0, 0.5f);
+            si.transform.localPosition = newPos * rt.position.y;
+            st.transform.localPosition = newPos * rt.position.y;
         }
 
-        //re-define the texts for health
+        //re-define the texts for skill
         si.name = c.g_NAME + "SP";
         st.name = c.g_NAME + "Skill";
         si.tag = c.g_SIDE;
@@ -198,13 +230,53 @@ public class HUDManager : MonoBehaviour {
         st.GetComponent<Text>().text = c.gs_SP.ToString();
     }
 
+    //Setting up CoolDown for HUD
+    //G: Cooldown, C: characterStats, R: HUD RectTransform
+    void SetupCD(GameObject meter, CharacterStats cs, RectTransform rt)
+    {
+        //Setting the meter relative to HUD
+        meter.transform.SetParent(rt.transform);
+
+        //reset local position relative to its parent and then modify it
+        if (cs.g_SIDE.ToUpper().Equals("PLAYER"))
+        {
+            Vector2 newPos = new Vector2(-1.5f, -1.8f);
+            meter.transform.localPosition =  newPos * rt.position.y;
+        }
+
+        else if (cs.g_SIDE.ToUpper().Equals("ENEMY"))
+        {
+            Vector2 newPos = new Vector2(1.5f, 1.8f);
+            meter.transform.localPosition = newPos * rt.position.y;
+        }
+
+        //re-define the texts for cooldown
+        meter.name = cs.g_NAME + "CoolDown";
+        meter.tag = cs.g_SIDE;
+        meter.GetComponent<Slider>().value = cs.gs_TM;
+    }
 
     //Updating HP values from battle
-    public void UpdatingHP()
+    public void UpdatingHP(int newHealth, int index)
     {
-        foreach(GameObject ht in instantiatedHT)
-        {
+        instantiatedHT[index].GetComponent<Text>().text = newHealth.ToString();
 
+        //if health is 0, remove the HUD of that character
+        if(newHealth <= 0)
+        {
+            instantiatedHUD[index].SetActive(false);
+        }
+    }
+
+    //Updating CD values from battle
+    public void UpdatingCD(float newCoolDown, int index)
+    {
+        instantiatedCD[index].GetComponent<Slider>().value = newCoolDown;
+
+        //if cooldown is over 100%, set it to 100%
+        if(newCoolDown >= 1.0f)
+        {
+            instantiatedCD[index].GetComponent<Slider>().value = 1.0f;
         }
     }
 }

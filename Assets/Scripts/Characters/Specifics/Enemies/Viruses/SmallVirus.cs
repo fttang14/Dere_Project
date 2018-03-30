@@ -4,21 +4,43 @@ using UnityEngine;
 
 public class SmallVirus : CharacterGeneric{
 
-    /*
-     * This code is for the Zero Form of the Small Virus.
-     * This script is a child of CharacterGeneric.
-     */
+    /// <summary>
+    /// This script is for the SmallVirus, and is a child of CharacterGeneric
+    /// </summary>
 
-    /*
-     * Specific to each character; Setting up the stats
-     * for each character.
-     */
+    /*** FUNCTIONS ***/
 
     protected override void CharacterSetup()
     {
         base.CharacterSetup();
-        characterStats = new CharacterStats("SmallVirus", gameObject.tag, 
-            60, 20, 6, 4, 12, 2, 0, 0, 45, 0, 0, gameObject.transform);
+
+        //For reading purposes, these local variables will contain each stat to be entered, and then they will
+        //all be relayed to CharacterStats. It's quite redundant, but it's easier for me to read 
+        //and understand.
+
+        gameObject.name = "SmallVirus";    //change the game object's name
+
+        string initNAME = gameObject.name;  //Name
+        string initSIDE = gameObject.tag;   //Side
+
+        int initHP = 60;   //Health Points
+        int initSP = 20;  //Skill Points
+        int initATK = 6;   //Attack Points
+        int initDEF = 4;    //Defense Points
+        int initSPD = 12;   //Speed Points
+        int initLUK = 2;   //Luck Points
+        int initSTE = 0;    //State (in terms of an integer)
+        int initEXM = 0;    //Experience Meter
+        int initEXP = 45;    //Experience Points
+        int initBID = 0;    //Battle ID
+        int initTM = 0;    //Turn Meter
+
+        Transform initPOS = gameObject.transform;   //Position (in terms of a transform)
+
+        //inserting all the defined variables into the CharacterStats, thus creating the character
+        characterStats = new CharacterStats(initNAME, initSIDE, initHP, initSP, initATK, initDEF, initSPD,
+            initLUK, initSTE, initEXM, initEXP, initBID, initTM, initPOS);
+
     }
 
 }

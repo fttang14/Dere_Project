@@ -4,54 +4,51 @@ using UnityEngine;
 
 public class PlayerBattleController : BattleController {
 
-    /* 
-     * This script will allow UI with the player characters.
-     * Depending on the user's inputs and decisions, those
-     * inputs will transfer to BattleManager so that the
-     * correct interactions are chosen... ; inheriting from
-     * Battle Controller
-     */
 
-    private void OnEnable()
+    /// <summary>
+    /// This script will allow UI with the player characters. Depending on the user's decisions, their inputs
+    /// will transfer to BattleManager so that the correct interactions are chosen. This is also a child of
+    /// BattleController
+    /// </summary>
+
+    /*** FUNCTIONS ***/
+
+    protected override void OnEnable()
     {
-        
-        Debug.Log("This is " + gameObject.name + " and this controller's ID is: " + userID);
-        Debug.Log("Please press '1', '2', '3', or '4' to attack a target...");
-        battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+        base.OnEnable(); //run code from parent script first
 
+        //DEBUGGING: just a letting the player know how to attack
+        Debug.Log("Please press '1', '2', '3', or '4' to attack a target...");
+        
     }
 
     private void Update()
     {
-        //TESTING
-        //seeing if the turn-based mechanism is working properly
+        //TESTING: seeing if the turn-based mechanism is working properly. Depending on which key is pressed,
+        //that input will then be relayed back to a function in BattleManager, along with this controller's
+        //battle ID.
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            battleManager.PlayerDecision(userID, 1);
+            battleManager.PlayerDecision(battleID, (int)Order.FIRST);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            battleManager.PlayerDecision(userID, 2);
+            battleManager.PlayerDecision(battleID, (int)Order.SECOND);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            battleManager.PlayerDecision(userID, 3);
+            battleManager.PlayerDecision(battleID, (int)Order.THIRD);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            battleManager.PlayerDecision(userID, 4);
+            battleManager.PlayerDecision(battleID, (int)Order.FOURTH);
         }
 
     }
 
-    //setting up the id for each character
-    public override void SetupBID(int bid)
-    {
-        base.SetupBID(bid);
-        userID = bid;
-    }
+
 }

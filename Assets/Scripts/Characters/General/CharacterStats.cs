@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterStats {
+public class CharacterStats{
 
-    /*
-	This script holds the stats of all characters. Values will change
-	accordingly, depending on the situations.
-	*/
+    /// <summary>
+    /// This script holds the stats of all characters. Values will change 
+    /// accordingly, depending on the situations.
+    /// </summary>
+ 
+    /*** VARIABLES ***/
 
-    //setting up the initial values
     string name;            //NAME: the name of the character
     string side;            //SIDE: the alignment of the character (Player, Enemy, NPC)
     int healthPoints;       //HP: the character's health points
@@ -19,14 +20,15 @@ public class CharacterStats {
     int speedPoints;        //SPD: the character's speed points
     int luckPoints;         //LUK: the character's luck points
     int state;              //STE: the character's current state
-    int experienceMeter;    //EXM: the character's experience meter;
-                            //ranges from 0 to 100
-    int experiencePoints;   //EXP: the character's experience points;
-                            //increases every time EXM % 100 = 0 &&
+    int experienceMeter;    //EXM: the character's experience meter; ranges from 0 to 100
+    int experiencePoints;   //EXP: the character's experience points; increases every time EXM % 100 = 0 &&
                             //EXM != 0
     int battleID;           //BID: the character's battle ID (will reset every battle)
-    float turnMeter;        //TM: meter that increments over time to determine when the character can take action
+    float turnMeter;        //TM: meter that increments over time to determine when the character 
+                            //can take action
     Transform position;     //POS: the character's battle position
+
+    bool isDead;            //ISD: determine if the character is dead or not
 
     //default constructor for all characters
     public CharacterStats(string id, string alignment, int hp, int sp, int atk, int def, 
@@ -54,6 +56,9 @@ public class CharacterStats {
 
         //Transform - setting up initial stat values
         position = pos;
+
+        //bool - setting up initial stat values
+        isDead = false;
     }
 
     //special addition for certain characters;
@@ -147,5 +152,11 @@ public class CharacterStats {
     {
         get { return position; }
         set { position = value; }
+    }
+
+    public bool gs_DEAD
+    {
+        get { return isDead; }
+        set { isDead = value; }
     }
 }

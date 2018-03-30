@@ -4,10 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Background
-  - NPC
-  - Enemy
   - HUD
+  - Enemy
+  - Background
   layers:
   - Default
   - TransparentFX
@@ -46,8 +45,11 @@ TagManager:
     uniqueID: 0
     locked: 0
   - name: Background
-    uniqueID: 4294610917
+    uniqueID: 2973513613
     locked: 0
   - name: Character
-    uniqueID: 2688564859
+    uniqueID: 2194140005
+    locked: 0
+  - name: HUD
+    uniqueID: 3324642539
     locked: 0

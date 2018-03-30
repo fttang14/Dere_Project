@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class CharacterGeneric : MonoBehaviour {
 
-    /*
-     * This code is going to be used for all characters.
-     * All specific character scripts will inherit from
-     * this script.
-     */
+    /// <summary>
+    /// This code is going to be used for all characters. It is going to add the correct battle controller
+    /// components to each character in battle. This is the parent script for all specific character scripts.
+    /// </summary>
+
+    /*** VARIABLES ***/
 
     protected CharacterStats characterStats;    //stats of the current character
     protected Rigidbody2D rb2d; //the 2D Rigidbody of the object
 
+
+    /*** FUNCTIONS ***/
 
 	// Use this for initialization
 	protected void Awake () {
@@ -26,9 +29,12 @@ public class CharacterGeneric : MonoBehaviour {
      * the character will have either a player or enemy
      * controller script attached.
      */
-
+    
+    //This function sets up the correct battle controllers for each character based on their tag as
+    //either "Player" or "Enemy."
     protected virtual void CharacterSetup()
     {
+        //The controllers are set to false so that everyone's turn doesn't all happen at once.
         if (gameObject.tag.ToUpper().Equals("PLAYER"))
         {
             gameObject.AddComponent<PlayerBattleController>();
@@ -41,9 +47,9 @@ public class CharacterGeneric : MonoBehaviour {
             gameObject.GetComponent<EnemyBattleController>().enabled = false;
         }
 
-        //Debug.Log("Setting up character...");
     }
 
+    //This function just returns the full stats of a specified character
     public CharacterStats ReturnStats
     {
         get { return characterStats; }
