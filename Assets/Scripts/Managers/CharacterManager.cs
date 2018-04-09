@@ -106,8 +106,6 @@ public class CharacterManager : MonoBehaviour {
     public void AddPlayerToRoster()
     {
 
-        //int BID = 1; //add in the battle ID for each character (IDs start at 1)
-
         //populating the player characters into the roster first
         foreach(GameObject g in playerObjects)
         {
@@ -115,7 +113,6 @@ public class CharacterManager : MonoBehaviour {
             if (g.name.ToUpper().Contains("DANDERE"))
             {
                 Dandere dandere = g.GetComponent<Dandere>();
-                dandere.ReturnStats.gs_POS = g.transform;
                 dandere.ReturnStats.gs_BID = battleID;
                 roster.Add(dandere.ReturnStats);
             }
@@ -123,7 +120,6 @@ public class CharacterManager : MonoBehaviour {
             else if (g.name.ToUpper().Contains("KUUDERE"))
             {
                 Kuudere kuudere = g.GetComponent<Kuudere>();
-                kuudere.ReturnStats.gs_POS = g.transform;
                 kuudere.ReturnStats.gs_BID = battleID;
                 roster.Add(kuudere.ReturnStats);
             }
@@ -131,7 +127,6 @@ public class CharacterManager : MonoBehaviour {
             else if (g.name.ToUpper().Contains("TSUNDERE"))
             {
                 Tsundere tsundere = g.GetComponent<Tsundere>();
-                tsundere.ReturnStats.gs_POS = g.transform;
                 tsundere.ReturnStats.gs_BID = battleID;
                 roster.Add(tsundere.ReturnStats);
             }
@@ -139,7 +134,6 @@ public class CharacterManager : MonoBehaviour {
             else if (g.name.ToUpper().Contains("YANDERE"))
             {
                 Yandere yandere = g.GetComponent<Yandere>();
-                yandere.ReturnStats.gs_POS = g.transform;
                 yandere.ReturnStats.gs_BID = battleID;
                 roster.Add(yandere.ReturnStats);
             }
@@ -156,17 +150,11 @@ public class CharacterManager : MonoBehaviour {
         //way to handle this...
         //string backgroundName = backgroundCheck.name.ToUpper();
 
-        //int BID = 1; //add in the battle ID for each character (IDs start at 1), although for looking up
-                     //enemies will be different in the Roster list, as they will listed after the
-                     //players have been added (so, the enemy's BID is 1, but their placement in the list
-                     //is 4 (5 - 1).
-
         foreach (GameObject g in enemyObjects)
         {
             if (g.name.ToUpper().Contains("PINKSLIME"))
             {
                 PinkSlime pinkSlime = g.GetComponent<PinkSlime>();
-                pinkSlime.ReturnStats.gs_POS = g.transform;
                 pinkSlime.ReturnStats.gs_BID = battleID;
                 roster.Add(pinkSlime.ReturnStats);
             }
@@ -174,7 +162,6 @@ public class CharacterManager : MonoBehaviour {
             else if (g.name.ToUpper().Contains("RIVALSCHOOLSTUDENT"))
             {
                 RivalSchoolStudent rivalSchoolStudent = g.GetComponent<RivalSchoolStudent>();
-                rivalSchoolStudent.ReturnStats.gs_POS = g.transform;
                 rivalSchoolStudent.ReturnStats.gs_BID = battleID;
                 roster.Add(rivalSchoolStudent.ReturnStats);
             }
@@ -182,7 +169,6 @@ public class CharacterManager : MonoBehaviour {
             else if (g.name.ToUpper().Contains("SMALLVIRUS"))
             {
                 SmallVirus smallVirus = g.GetComponent<SmallVirus>();
-                smallVirus.ReturnStats.gs_POS = g.transform;
                 smallVirus.ReturnStats.gs_BID = battleID;
                 roster.Add(smallVirus.ReturnStats);
             }

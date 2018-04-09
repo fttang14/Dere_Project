@@ -22,6 +22,12 @@ public class HUDManager : MonoBehaviour {
 
     public GameObject coolDown;
 
+    public GameObject actions;  //actions that the character can make; PLAYER CHARACTERS ONLY
+    public GameObject enemyTarget;  //this will pop up above the enemies so the player can choose who to attack
+
+    public List<RectTransform> actionSpawn;
+    public List<RectTransform> EnemyTargetSpawn;
+
     //The instantiated HUD for each character, along with other icons and texts
     List<GameObject> instantiatedHUD;
     List<GameObject> instantiatedHealth;
@@ -42,6 +48,7 @@ public class HUDManager : MonoBehaviour {
         }
         enemyHUD.SetActive(false);
 
+        actions.SetActive(false);
 
         instantiatedHUD = new List<GameObject>();
         instantiatedHealth = new List<GameObject>();
@@ -88,11 +95,13 @@ public class HUDManager : MonoBehaviour {
                         RectTransform rt = newG.GetComponent<RectTransform>();
 
                         //create instantiations of other game objects relative to HUD
+                        
                         GameObject instantHI = Instantiate(healthIcon);
                         GameObject instantHT = Instantiate(healthText);
                         GameObject instantSI = Instantiate(skillIcon);
                         GameObject instantST = Instantiate(skillText);
                         GameObject instantCD = Instantiate(coolDown);
+                        
 
                         /*** HEALTH ***/
                         SetupHP(instantHI, instantHT, cs, rt);
@@ -104,12 +113,14 @@ public class HUDManager : MonoBehaviour {
                         SetupCD(instantCD, cs, rt);
 
                         /*** INSTANTIATE ***/
+                        
                         instantiatedHUD.Add(newG);
                         instantiatedHealth.Add(instantHI);
                         instantiatedHT.Add(instantHT);
                         instantiatedSkill.Add(instantSI);
                         instantiatedST.Add(instantST);
                         instantiatedCD.Add(instantCD);
+                        
 
                         //go to the next character when finished
                         break;
@@ -166,6 +177,17 @@ public class HUDManager : MonoBehaviour {
         }
     }
 
+    //This function is only for PLAYER characters; activate the Buttons that allow user input and return that game
+    //object to the player controller
+    public GameObject ActivateActions(int BID)
+    {
+        GameObject instantAction = Instantiate(actions);
+        instantAction.SetActive(true);
+        instantAction.transform.SetParent(GameObject.Find("Canvas").transform);
+        instantAction.GetComponent<RectTransform>().anchoredPosition = actionSpawn[BID].anchoredPosition;
+        return instantAction;
+    }
+
     //Setting up HP for HUD
     //G: healthIcon, G: healthText, C: characterStats, R: HUD RectTransform
     void SetupHP (GameObject hi, GameObject ht, CharacterStats c, RectTransform rt)
@@ -199,7 +221,7 @@ public class HUDManager : MonoBehaviour {
     }
 
     //Setting up SP for HUD
-    //G: healthIcon, G: healthText, C: characterStats, R: HUD RectTransform
+    //G: skillIcon, G: skillText, C: characterStats, R: HUD RectTransform
     void SetupMP(GameObject si, GameObject st, CharacterStats c, RectTransform rt)
     {
 

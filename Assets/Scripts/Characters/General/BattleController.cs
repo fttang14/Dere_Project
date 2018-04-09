@@ -64,7 +64,8 @@ public class BattleController : MonoBehaviour {
     {
         Debug.Log("Ending Turn...");
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForEndOfFrame();
+        enabled = false;
     }
 
 

@@ -13,9 +13,7 @@ public class BattleManager : MonoBehaviour
 
     bool executeTurn;   //whatever action is going on
     bool turnReady;     //determines if one of the character's is ready to take action
-    //bool outOfQueue;    //determine if character is no longer in queue
     bool movingOn;    //determines if the battle will continue after character takes action
-    bool characterDead; //take out a character from the roster if they are dead
 
     Coroutine co;   //the coroutine
 
@@ -50,7 +48,6 @@ public class BattleManager : MonoBehaviour
     {
         executeTurn = false;
         movingOn = false;
-        characterDead = false;
         turnReady = false;
         //outOfQueue = false;
         co = null;
@@ -72,6 +69,7 @@ public class BattleManager : MonoBehaviour
 
             //stop cooldown, and let players in queue take action
             StopCoroutine(co);
+            LowerOpacity();
             ControllerEnabler();
             executeTurn = false;
         }
@@ -81,8 +79,58 @@ public class BattleManager : MonoBehaviour
             
             //stop queue, and run cooldown coroutine
             StopCoroutine(co);
+            ResetOpacity();
             co = StartCoroutine("AwaitingAction");
             movingOn = false;
+        }
+    }
+
+    //lower the opacity of all characters if they are not in queue
+    void LowerOpacity()
+    {
+        foreach(CharacterStats cs in statistics)
+        {
+            //search for all characters who are not in queue
+            if(cs.gs_STE != (int)Position.INQUEUE && !cs.gs_DEAD)
+            {
+                //if the character is a player object
+                if (cs.g_SIDE.ToUpper().Equals("PLAYER"))
+                {
+                    int BID_index = cs.gs_BID;
+                    playersInCombat[BID_index].GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+                }
+
+                //if the character is an enemy object
+                else if (cs.g_SIDE.ToUpper().Equals("ENEMY"))
+                {
+                    int BID_index = cs.gs_BID % 4;
+                    enemiesInCombat[BID_index].GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+                }
+            }
+        }
+    }
+
+    //reset everyone's opacity after the turn is over
+    void ResetOpacity()
+    {
+        //go through the players first
+        foreach(GameObject g in playersInCombat)
+        {
+            //make sure that the character is NOT dead, therefore is still active
+            if (g.activeSelf)
+            {
+                g.GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+        }
+
+        //then go through the enemies
+        foreach(GameObject g in enemiesInCombat)
+        {
+            //make sure that the character is NOT dead, therefore is still active
+            if (g.activeSelf)
+            {
+                g.GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            }
         }
     }
 
@@ -98,17 +146,6 @@ public class BattleManager : MonoBehaviour
         {
             int BID_index = queue[0].gs_BID;
             playersInCombat[BID_index].GetComponent<PlayerBattleController>().enabled = true;
-
-            /*
-            for(int i = 0; i < playersInCombat.Count; i++)
-            {
-                if (playersInCombat[i].name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
-                {
-                    playersInCombat[i].GetComponent<PlayerBattleController>().enabled = true;
-                    break;
-                }
-            }
-            */
         }
 
         //same goes if the character is an enemy
@@ -118,22 +155,10 @@ public class BattleManager : MonoBehaviour
             int BID_index = queue[0].gs_BID % 4;
 
             //DEBUGGING
-            Debug.Log("Enemy BID: " + BID_index);
+            //Debug.Log("Enemy BID: " + BID_index);
 
             enemiesInCombat[BID_index].GetComponent<EnemyBattleController>().enabled = true;
-            /*
-            for (int j = 0; j < enemiesInCombat.Count; j++)
-            {
-                if(j == (queue[0].gs_BID % enemiesInCombat.Count))
-                {
-                    enemiesInCombat[j].GetComponent<EnemyBattleController>().enabled = true;
-                    break;
-                }
-            }
-            */
         }
-
-        //outOfQueue = true; //prevent any other characters in queue from having their controllers activated
     }
 
     /// <summary>
@@ -180,7 +205,7 @@ public class BattleManager : MonoBehaviour
         HUD.ActivateHUD(statistics);
 
         //DEBUG
-        DisplayRoster_Test();
+        //DisplayRoster_Test();
 
         // The coroutine will start when all the characters are in the roster
         co = StartCoroutine("AwaitingAction");
@@ -223,16 +248,6 @@ public class BattleManager : MonoBehaviour
                 queue[0].gs_TM = 0;
                 playersInCombat[BID_player].GetComponent<PlayerBattleController>().enabled = false;
 
-                /*
-                foreach(GameObject g in playersInCombat)
-                {
-                    if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()))
-                    {
-                        g.GetComponent<PlayerBattleController>().enabled = false;
-                    }
-                }
-                */
-
                 queue.RemoveAt(0);
                 if (queue.Count <= 0) { movingOn = true; turnReady = false; }
                 else { executeTurn = true; }
@@ -256,7 +271,7 @@ public class BattleManager : MonoBehaviour
     {
         bool playerFound = false; //this determines if the enemy still exists or not...
         int BID_player = player;  //there are 4 players total, and enemies come after
-        int BID_enemy = enemy % 4;
+        //int BID_enemy = enemy % 4;
 
         //search for the enemy with the given ID provided by
         //the decide input, provided that they are not dead already
@@ -274,31 +289,20 @@ public class BattleManager : MonoBehaviour
         {
 
             queue[0].gs_TM = 0;
-            enemiesInCombat[BID_enemy].GetComponent<EnemyBattleController>().enabled = false;
-
-            /*
-            foreach (GameObject g in enemiesInCombat)
-            {
-                if (g.name.ToUpper().Contains(queue[0].g_NAME.ToUpper()) &&
-                    g.transform.position.Equals(queue[0].gs_POS.position))
-                {
-                    g.GetComponent<EnemyBattleController>().enabled = false;
-                }
-            }
-			*/
+            //enemiesInCombat[BID_enemy].GetComponent<EnemyBattleController>().enabled = false;
 
             queue.RemoveAt(0);
             if (queue.Count <= 0) { movingOn = true; turnReady = false; }
             else { executeTurn = true; }
 
-            return false;
+            return true;
         }
 
         else
         {
             Debug.Log("Target could not be found. Retrying...");
 
-            return true;
+            return false;
         }
     }
 
@@ -327,8 +331,8 @@ public class BattleManager : MonoBehaviour
         */
 
         //DEBUGGING
-        Debug.Log("Players in Combat: " + playersInCombat.Count);
-        Debug.Log("Enemies in Combat: " + enemiesInCombat.Count);
+        //Debug.Log("Players in Combat: " + playersInCombat.Count);
+        //Debug.Log("Enemies in Combat: " + enemiesInCombat.Count);
     }
 
     //manages timers during battle
@@ -408,8 +412,6 @@ public class BattleManager : MonoBehaviour
 
             //disable the character once dead
             WhoIsDead(statistics[e]);
-
-            characterDead = true;
         }
 
         //Updating the health value
@@ -438,7 +440,6 @@ public class BattleManager : MonoBehaviour
         {
             statistics[p].gs_HP = 0;
             statistics[p].gs_DEAD = true;
-            characterDead = true;
         }
 
         //Updating the health value

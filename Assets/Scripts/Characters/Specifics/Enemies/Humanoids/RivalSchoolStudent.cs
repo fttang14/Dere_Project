@@ -34,11 +34,11 @@ public class RivalSchoolStudent : CharacterGeneric {
         int initBID = 0;    //Battle ID
         int initTM = 0;    //Turn Meter
 
-        Transform initPOS = gameObject.transform;   //Position (in terms of a transform)
+        //Transform initPOS = gameObject.transform;   //Position (in terms of a transform)
 
         //inserting all the defined variables into the CharacterStats, thus creating the character
         characterStats = new CharacterStats(initNAME, initSIDE, initHP, initSP, initATK, initDEF, initSPD,
-            initLUK, initSTE, initEXM, initEXP, initBID, initTM, initPOS);
+            initLUK, initSTE, initEXM, initEXP, initBID, initTM);
 
     }
 }

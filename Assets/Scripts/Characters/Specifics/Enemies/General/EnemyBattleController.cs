@@ -36,15 +36,31 @@ public class EnemyBattleController : BattleController {
         //if enemy couldn't detect player, it will try again...
         if (onceMore)
         {
-            StopCoroutine("TestingTimer");
+            StopCoroutine(co);
             onceMore = false;
-            StartCoroutine("TestingTimer");
+            co = StartCoroutine("TestingTimer");
         }
+
+        //if the enemy's turn is ending, stop everything and disable controller
+        if (endingTurn)
+        {
+            co = StartCoroutine("FinishTurn");
+            //StopAllCoroutines();
+            
+        }
+    }
+
+    //Stop all coroutines when the controller is disabled
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     //DEBUGGING: This coroutine will allow the enemy to "choose" its target to attack
     IEnumerator TestingTimer()
     {
+        
+
         //Waiting period for the enemy to decide
         Debug.Log("Awaiting Orders...");
         yield return new WaitForSeconds(3f);
@@ -54,6 +70,11 @@ public class EnemyBattleController : BattleController {
 
         //this boolean will determine if the enemy will have to attack again or not.
         endingTurn = battleManager.EnemyDecision(battleID, playerToAttack);
+
+        if (!endingTurn)
+        {
+            onceMore = true;
+        }
 
         yield return null;
     }

@@ -4,61 +4,32 @@ using UnityEngine;
 
 public class CharacterStats{
 
-    /// <summary>
-    /// This script holds the stats of all characters. Values will change 
-    /// accordingly, depending on the situations.
-    /// </summary>
- 
-    /*** VARIABLES ***/
-
-    string name;            //NAME: the name of the character
-    string side;            //SIDE: the alignment of the character (Player, Enemy, NPC)
-    int healthPoints;       //HP: the character's health points
-    int skillPoints;        //SP: the character's skill points 
-    int attackPoints;       //ATK: the character's attack points
-    int defensePoints;      //DEF: the character's defense points
-    int speedPoints;        //SPD: the character's speed points
-    int luckPoints;         //LUK: the character's luck points
-    int state;              //STE: the character's current state
-    int experienceMeter;    //EXM: the character's experience meter; ranges from 0 to 100
-    int experiencePoints;   //EXP: the character's experience points; increases every time EXM % 100 = 0 &&
-                            //EXM != 0
-    int battleID;           //BID: the character's battle ID (will reset every battle)
-    float turnMeter;        //TM: meter that increments over time to determine when the character 
-                            //can take action
-    Transform position;     //POS: the character's battle position
-
-    bool isDead;            //ISD: determine if the character is dead or not
-
     //default constructor for all characters
     public CharacterStats(string id, string alignment, int hp, int sp, int atk, int def, 
-        int spd, int luk, int ste, int exm, int exp, int bid, float tm, Transform pos)
+        int spd, int luk, int ste, int exm, int exp, int bid, float tm)
     {
 
         //String - setting up initial stat values
-        name = id;
-        side = alignment;
+        g_NAME = id;
+        g_SIDE = alignment;
 
         //int - setting up intial stat values
-        healthPoints = hp;
-        skillPoints = sp;
-        attackPoints = atk;
-        defensePoints = def;
-        speedPoints = spd;
-        luckPoints = luk;
-        state = ste;
-        experienceMeter = exm;
-        experiencePoints = exp;
-        battleID = bid;
+        gs_HP = hp;
+        gs_SP = sp;
+        gs_ATK = atk;
+        gs_DEF = def;
+        gs_SPD = spd;
+        gs_LUK = luk;
+        gs_STE = ste;
+        gs_EXM = exm;
+        gs_EXP = exp;
+        gs_BID = bid;
 
         //float - setting up intial stat values
-        turnMeter = tm;
-
-        //Transform - setting up initial stat values
-        position = pos;
+        gs_TM = tm;
 
         //bool - setting up initial stat values
-        isDead = false;
+        gs_DEAD = false;
     }
 
     //special addition for certain characters;
@@ -72,91 +43,31 @@ public class CharacterStats{
     */
 
     //get-set properties for each stat 
-    public string g_NAME
-    {
-        get { return name; }
-    }
+    public string g_NAME { get; private set; }  //Name of the character
 
-    public string g_SIDE
-    {
-        get { return side; }
-    }
+    public string g_SIDE { get; private set; }  //Affiliation of the character
+
+    public int gs_HP { get; set; }  //Character's Health value
     
-    public int gs_HP
-    {
-        get { return healthPoints; }
-        set { healthPoints = value; }
-    }
+    public int gs_SP { get; set; }  //Character's Skill value
 
-    public int gs_SP
-    {
-        get { return skillPoints; }
-        set { skillPoints = value; }
-    }
+    public int gs_ATK { get; set; } //Character's Attack value
 
-    public int gs_ATK
-    {
-        get { return attackPoints; }
-        set { attackPoints = value; }
-    }
+    public int gs_DEF { get; set; } //Character's Defense value
 
-    public int gs_DEF
-    {
-        get { return defensePoints; }
-        set { defensePoints = value; }
-    }
+    public int gs_SPD { get; set; } //Character's Speed value
 
-    public int gs_SPD
-    {
-        get { return speedPoints; }
-        set { speedPoints = value; }
-    }
+    public int gs_LUK { get; set; } //Character's Luck value
 
-    public int gs_LUK
-    {
-        get { return luckPoints; }
-        set { luckPoints = value; }
-    }
+    public int gs_STE { get; set; } //Character's State / Position
 
-    public int gs_STE
-    {
-        get { return state; }
-        set { state = value; }
-    }
+    public int gs_EXM { get; set; } //Character's Experience meter value
 
-    public int gs_EXM
-    {
-        get { return experienceMeter; }
-        set { experienceMeter = value; }
-    }
+    public int gs_EXP { get; set; } //Character's Experience points value
 
-    public int gs_EXP
-    {
-        get { return experiencePoints; }
-        set { experiencePoints = value; }
-    }
+    public int gs_BID { get; set; } //Character's Battle ID
 
-    public int gs_BID
-    {
-        get { return battleID; }
-        set { battleID = value; }
-    }
+    public float gs_TM { get; set; }    //Character's cooldown value
 
-    public float gs_TM
-    {
-        get { return turnMeter; }
-        set { turnMeter = value; }
-    }
-
-    public Transform gs_POS
-    {
-        get { return position; }
-        set { position = value; }
-    }
-
-    public bool gs_DEAD
-    {
-        get { return isDead; }
-        set { isDead = value; }
-    }
+    public bool gs_DEAD { get; set; }   //Character's death state
 }
