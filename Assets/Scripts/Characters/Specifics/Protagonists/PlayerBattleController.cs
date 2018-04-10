@@ -29,9 +29,6 @@ public class PlayerBattleController : BattleController {
     {
         base.OnEnable(); //run code from parent script first
 
-        //DEBUGGING: just a letting the player know how to attack
-        Debug.Log("Please press '1', '2', '3', or '4' to attack a target...");
-
         //Retrieve the buttons from the HUD Manager
         hudManager = GameObject.Find("HUDManager").GetComponent<HUDManager>();
 
@@ -52,14 +49,45 @@ public class PlayerBattleController : BattleController {
         surprise = actions.transform.Find("SurpriseButton").GetComponent<Button>();
         surprise.GetComponentInChildren<Text>().text = "Surprise!";
 
-        //player has not taken any action yet
-        playerTakingAction = false;
-
         //let the player click on the options available
         attack.onClick.AddListener(Attacking);
         skill.onClick.AddListener(Skills);
         defend.onClick.AddListener(Defending);
         surprise.onClick.AddListener(Surprise);
+
+        actions.SetActive(true); //allow the player to take action
+
+        //reset the enemy Targets every time, in case that there is a change in enemy count
+        enemyTargets = new List<Button>();
+    }
+
+    //Reset everything in the controller
+    private void OnDisable()
+    {
+        /*
+        attack.enabled = false;
+        attack = null;
+
+        skill.enabled = false;
+        skill = null;
+
+        defend.enabled = false;
+        defend = null;
+
+        surprise.enabled = false;
+        surprise = null;
+        */
+
+        
+        hudManager = null;
+
+        Destroy(actions);
+
+        attack = null;
+        defend = null;
+        skill = null;
+        surprise = null;
+        
     }
 
     private void Update()
@@ -110,8 +138,66 @@ public class PlayerBattleController : BattleController {
     //ATTACKING
     void Attacking()
     {
-        
-        Debug.Log("I am attacking");
+        //send a BID to HUDManager, and if there is a match, have the HUD manager return a reference to
+        //the button with the corresponding BID
+        for(int bid_i = 0; bid_i < 4; bid_i++)
+        {
+            Button buttonTemp = hudManager.EnemyTargets(bid_i);
+
+            //correspond the correct attacking function with the bid_i
+            if (buttonTemp != null)
+            {
+                switch (bid_i)
+                {
+                    case (int)Order.FIRST:
+                        buttonTemp.onClick.AddListener(AttackOne);
+                        break;
+                    case (int)Order.SECOND:
+                        buttonTemp.onClick.AddListener(AttackTwo);
+                        break;
+                    case (int)Order.THIRD:
+                        buttonTemp.onClick.AddListener(AttackThree);
+                        break;
+                    case (int)Order.FOURTH:
+                        buttonTemp.onClick.AddListener(AttackFour);
+                        break;
+                }
+                enemyTargets.Add(buttonTemp);
+            }
+        }
+
+        //once the enemy targets have been set up, deactivate player buttons
+        Debug.Log("enemyTargets: " + enemyTargets.Count);
+        actions.SetActive(false);
+    }
+
+    //These four functions will determine which enemy is being attacked...
+    void AttackOne()
+    {
+        Debug.Log("Attacking Enemy One!");
+        hudManager.TurnOffEnemyTargets();
+        battleManager.PlayerDecision(battleID, (int)Order.FIRST);
+    }
+
+    void AttackTwo()
+    {
+        Debug.Log("Attacking Enemy Two!");
+        hudManager.TurnOffEnemyTargets();
+        battleManager.PlayerDecision(battleID, (int)Order.SECOND);
+    }
+
+    void AttackThree()
+    {
+        Debug.Log("Attacking Enemy Three!");
+        hudManager.TurnOffEnemyTargets();
+        battleManager.PlayerDecision(battleID, (int)Order.THIRD);
+    }
+
+    void AttackFour()
+    {
+        Debug.Log("Attacking Enemy Four!");
+        hudManager.TurnOffEnemyTargets();
+        battleManager.PlayerDecision(battleID, (int)Order.FOURTH);
     }
 
     //USING SKILLS

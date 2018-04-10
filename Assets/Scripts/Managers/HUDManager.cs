@@ -23,7 +23,8 @@ public class HUDManager : MonoBehaviour {
     public GameObject coolDown;
 
     public GameObject actions;  //actions that the character can make; PLAYER CHARACTERS ONLY
-    public GameObject enemyTarget;  //this will pop up above the enemies so the player can choose who to attack
+    public GameObject enemyTarget;  //this will pop up above the enemies so the player can 
+                                    //choose who to attack
 
     public List<RectTransform> actionSpawn;
     public List<RectTransform> EnemyTargetSpawn;
@@ -35,6 +36,9 @@ public class HUDManager : MonoBehaviour {
     List<GameObject> instantiatedHT;
     List<GameObject> instantiatedST;
     List<GameObject> instantiatedCD;
+
+    //The instantiated buttons for the enemy targets
+    List<GameObject> instantiatedET;
 
     /*** FUNCTIONS ***/
 
@@ -56,15 +60,16 @@ public class HUDManager : MonoBehaviour {
         instantiatedHT = new List<GameObject>();
         instantiatedST = new List<GameObject>();
         instantiatedCD = new List<GameObject>();
+        instantiatedET = new List<GameObject>();
     }
 
-    // This function will use instantiate HUDs for each character on the field; information relayed from
-    // BattleManager
+    // This function will use instantiate HUDs for each character on the field; information relayed
+    // from BattleManager
     public void ActivateHUD(List<CharacterStats> roster)
     {
         //For every enemy on the field, create a new HUD for it by shifting pre-existing HUD
         Vector2 enemyHUDShift = Vector2.left * 100;
-        float shiftNumber = 0;
+        int shiftNumber = 0;
 
         //setting up the HUD for each character
         foreach(CharacterStats cs in roster)
@@ -81,7 +86,8 @@ public class HUDManager : MonoBehaviour {
                     //once a match has been found, start modifying each component of the HUD
                     if (g.name.ToUpper().Contains(characterName.ToUpper()))
                     {
-                        //create an instance of this game object so that it doesn't affect the actual prefab
+                        //create an instance of this game object so that 
+                        //it doesn't affect the actual prefab
                         GameObject newG = Instantiate(g);
                         newG.name = cs.g_NAME + "HUD";
 
@@ -171,14 +177,23 @@ public class HUDManager : MonoBehaviour {
                 instantiatedST.Add(instantST);
                 instantiatedCD.Add(instantCD);
 
+                /*** INSTANTIATING ENEMY TARGET BUTTONS FOR PLAYER ***/
+                GameObject instantET = Instantiate(enemyTarget, EnemyTargetSpawn[shiftNumber]);
+                instantET.transform.SetParent(GameObject.Find("Canvas").transform);
+                instantET.name = cs.g_NAME + "Target";
+                instantET.transform.GetComponentInChildren<Text>().text = 
+                    instantET.name.Substring(0, instantET.name.Length-6);
+                instantET.SetActive(false);
+                instantiatedET.Add(instantET);
+
                 //increment shifting value
                 shiftNumber++;
             }
         }
     }
 
-    //This function is only for PLAYER characters; activate the Buttons that allow user input and return that game
-    //object to the player controller
+    //This function is only for PLAYER characters; activate the Buttons that allow user input and
+    //return that game object to the player controller
     public GameObject ActivateActions(int BID)
     {
         GameObject instantAction = Instantiate(actions);
@@ -186,6 +201,45 @@ public class HUDManager : MonoBehaviour {
         instantAction.transform.SetParent(GameObject.Find("Canvas").transform);
         instantAction.GetComponent<RectTransform>().anchoredPosition = actionSpawn[BID].anchoredPosition;
         return instantAction;
+    }
+
+    //This function will return Buttons to the PlayerBattleController so that the user can choose 
+    //which enemy to attack
+    public Button EnemyTargets(int BID)
+    {
+        //enemy index starts after the player characters (for now...)
+        int enemyBID = BID + 4;
+
+        //if the index of the HUD does not exist, do not instantiate that button
+        if(enemyBID >= instantiatedHUD.Count)
+        {
+            return null;
+        }
+
+        //if the HUD is currently active, instantiate the enemy target game object,
+        //grab its Button component, and return it to the PlayerBattleController
+        else if (instantiatedHUD[enemyBID].activeSelf)
+        {
+            instantiatedET[BID].SetActive(true);
+            return instantiatedET[BID].GetComponent<Button>();
+        }
+
+        //if the HUD exists, but is deactivated, do not instantiate that button
+        else
+        {
+            return null;
+        }
+
+    }
+
+    //This function will disable the Buttons for PlayerBattleController until the next player
+    //character's turn comes up.
+    public void TurnOffEnemyTargets()
+    {
+        foreach(GameObject g in instantiatedET)
+        {
+            g.SetActive(false);
+        }
     }
 
     //Setting up HP for HUD
